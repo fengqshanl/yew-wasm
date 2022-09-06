@@ -1,0 +1,85 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+.layout{
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.top{
+  display: flex;
+  flex-direction: row;
+  height: 5vh;
+  align-items: center;
+  width: 100vw;
+  justify-content: space-between;
+  background-color: rgb(127, 255, 215);
+  &-info{
+    width: 15vw;
+    display: flex;
+    flex-direction: row;
+  }
+  &-menu{
+    width: 45vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    &-button{
+      border-bottom: 1px solid transparent ;
+      padding: .5em 1em .5em 1em;
+      cursor: pointer;
+      &:hover{
+        border-color: rgb(222,245,242);
+        color: rgb(222,245,242);
+      }
+    }
+  }
+  &-logo{
+    width: 40vw;
+    padding-left: 4em;
+  }
+}
+
+.menu{
+  margin: 1em auto 1em 2em;
+}
+
+.content{
+  display: flex;
+  width: 100vw;
+  height: 95vh;
+  &-left{
+    width: 20vw;
+    display: flex;
+  }
+  &-right{
+    justify-content: center;
+    padding: 2em;
+    width: 80vw;
+    display: flex;
+  }
+}
+
+.card{
+  width: 50%;
+  display: flex;
+  .content{
+    width: 100%;
+    display: flex;
+    padding: 2em auto 2em auto;
+    flex-direction: column;
+  }
+}
+
+.save-button-column{
+  text-align: center;
+  &-left{
+    text-align: right;
+  }
+  &-right{
+    text-align: left;
+  }
+}
