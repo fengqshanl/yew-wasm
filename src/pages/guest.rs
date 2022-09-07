@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 use crate::ownhttp::myhttp::request;
+
 // #[derive(Clone, Debug, Eq, PartialEq, Properties)]
 // pub struct GuestProps {
 // }
@@ -108,9 +109,9 @@ use crate::ownhttp::myhttp::request;
 // }
 
 #[function_component(Guest)]
-pub fn GuestComponent() -> Html {
+pub fn guest_component() -> Html {
 
-    fn onReset(e: MouseEvent) {
+    fn on_reset(e: MouseEvent) {
         // request(reqwest::Method::GET, "/".to_string(), ())
         println!("reset reset reset");
     }
@@ -133,12 +134,12 @@ pub fn GuestComponent() -> Html {
     };
 
     html! {
-        <div class="card">
+        <form action="" method="get" class="card">
             <div class="card-content">
                 <div class="content">
                     <div class="columns is-2">
                         <div class="column">
-                            <input class="input" type="text" placeholder="药品名称" />
+                            <input class="input" type="text"  name="name" id="name" placeholder="药品名称" />
                         </div>
                         <div class="column">
                         <div class="file is-primary">
@@ -158,12 +159,12 @@ pub fn GuestComponent() -> Html {
                     </div>
                     <div class="columns is-2">
                         <div class="column">
-                            <input class="input" type="text" placeholder="商标" />
+                            <input class="input" type="text"  name="tag" id="tag" placeholder="商标" />
                         </div>
                     </div>
                     <div class="columns is-2">
                         <div class="column">
-                            <input class="input" type="text" placeholder="规格" />
+                            <input class="input" type="text"  name="name" id="name" placeholder="规格" />
                         </div>
                     </div>
                     <div class="columns is-2">
@@ -194,14 +195,15 @@ pub fn GuestComponent() -> Html {
                     <div class="columns is-2 save-button-column">
                         <div class="column save-button-column-left">
                             <button class="button is-link" {onclick} >{"保存"}</button>
+                            <input type="submit" value="Subscribe!" />
                         </div>
                         <div class="column save-button-column-right">
-                            <button type="submit" class="button is-light" onclick={onReset} >{"重置"}</button>
+                            <button type="submit" class="button is-light" onclick={on_reset} >{"重置"}</button>
                         </div>
                     </div>
                     
                 </div>
             </div>
-        </div>  
+        </form>
     }
 }
