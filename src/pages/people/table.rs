@@ -1,23 +1,42 @@
 use yew::{html, Component, Context, Html, Properties};
+use yew::prelude::*;
+use yew_hooks::use_async;
+use crate::ownhttp::myhttp::request;
 
-#[derive(Debug, Eq, PartialEq, Properties)]
-pub struct DrugTableProps {
-    
+#[derive(Clone, Debug, Eq, PartialEq, Properties)]
+pub struct DrugInfo {
+
 }
 
-pub struct DrugTable;
+#[function_component(DrugTable)]
+pub fn drug_table() -> Html {
+    let update_info = use_state(Vec::new());
+    let drug_info = use_async(async move {
+        request::<(), ()>(reqwest::Method::GET,"/".to_string(),()).await
+    });
 
-impl Component for DrugTable {
-    type Message = ();
-    type Properties = DrugTableProps;
+    {
+        let drug_info = drug_info.clone();
+        let update_info = update_info.clone();
+        use_effect_with_deps(
+            move |drug_info| {
+                if let Some(drug_info) = &drug_info.data {
+                    update_info.set(UserUpdateInfo {
+                        email: user_info.user.email.clone(),
+                        username: user_info.user.username.clone(),
+                        password: None,
+                        image: user_info.user.image.clone().unwrap_or_default(),
+                        bio: user_info.user.bio.clone().unwrap_or_default(),
+                    });
+                }
+                || ()
+            },
+            drug_info,
+        );
+    };
 
-    fn create(_ctx: &Context<Self>) -> Self {
-        Self
-    }
-
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        html! {
-            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+    html! {
+ <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
   <thead>
     <tr>
       <th>{"序号"}</th>
@@ -48,6 +67,5 @@ impl Component for DrugTable {
     </tr>
   </tbody>
 </table>
-        }
     }
 }

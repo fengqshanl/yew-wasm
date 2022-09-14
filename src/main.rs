@@ -1,9 +1,13 @@
 #[macro_use]
 extern crate yew;
+#[macro_use]
+extern crate validator_derive;
+
 use yew::prelude::*;
 use yew::html::Scope;
 use yew_router::prelude::*;
 use route::{Route, switch};
+
 mod ownhttp;
 mod dropdown;
 mod pages;
