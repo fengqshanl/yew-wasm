@@ -59,27 +59,6 @@ impl Model {
     </li>
   </ul>
 </aside>
-            // <nav class="navbar" role="navigation" aria-label="main navigation">
-            // <div class="navbar-menu">
-            // <div class="navbar-start">
-            //     <Link<Route> classes={classes!("navbar-item","is-ghost")} to={Route::People}>
-            //         { "人员" }
-            //     </Link<Route>>
-            //     <Link<Route> classes={classes!("navbar-item","is-ghost")} to={Route::Guest}>
-            //         {"客户"}
-            //     </Link<Route>>
-            //     <Link<Route> classes={classes!("navbar-item")} to={Route::Drug}>
-            //         {"药品"}
-            //     </Link<Route>>
-            //     <Link<Route> classes={classes!("navbar-item")} to={Route::Case}>
-            //         {"病例"}
-            //     </Link<Route>>
-            //     <Link<Route> classes={classes!("navbar-item")} to={Route::Setting}>
-            //         {"设置"}
-            //     </Link<Route>>
-            //     </div>
-            // </div>
-            // </nav>
         }
     }
     fn login_view(&self, link:&Scope<Self>) -> Html {

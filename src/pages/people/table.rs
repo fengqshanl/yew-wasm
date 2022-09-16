@@ -4,15 +4,13 @@ use yew_hooks::use_async;
 use crate::ownhttp::myhttp::request;
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties)]
-pub struct DrugInfo {
-
-}
+pub struct DrugInfo {}
 
 #[function_component(DrugTable)]
 pub fn drug_table() -> Html {
     let update_info = use_state(Vec::new());
     let drug_info = use_async(async move {
-        request::<(), ()>(reqwest::Method::GET,"/".to_string(),()).await
+        request::<(), ()>(reqwest::Method::GET, "/".to_string(), ()).await
     });
 
     {
@@ -21,13 +19,7 @@ pub fn drug_table() -> Html {
         use_effect_with_deps(
             move |drug_info| {
                 if let Some(drug_info) = &drug_info.data {
-                    update_info.set(UserUpdateInfo {
-                        email: user_info.user.email.clone(),
-                        username: user_info.user.username.clone(),
-                        password: None,
-                        image: user_info.user.image.clone().unwrap_or_default(),
-                        bio: user_info.user.bio.clone().unwrap_or_default(),
-                    });
+                    println!("{:?}", drug_info);
                 }
                 || ()
             },
