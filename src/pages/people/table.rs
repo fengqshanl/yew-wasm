@@ -1,6 +1,6 @@
 use yew::{html, Component, Context, Html, Properties};
 use yew::prelude::*;
-use yew_hooks::use_async;
+use yew_hooks::{use_async, use_effect_once};
 use crate::ownhttp::myhttp::request;
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties, Default)]
@@ -21,15 +21,29 @@ pub fn drug_table() -> Html {
 
     log::info!("table");
 
-        use_effect_with_deps(
-            move |drug_info| {
+    {
+        let drug_info = drug_info.clone();
+        use_effect_once(move|| {
+        drug_info.run();
+
+        || log::info!("Running clean-up of effect on unmount")
+    });
+    }
+
+
+
+    {
+        let drug_info = drug_info.clone();
+        use_effect_with_deps(move| drug_info | {
                 if let Some(drug_info) = &drug_info.data {
-                    log::info!("data was: {:?}", drug_info)
+                    println!("{:?}", drug_info);
                 }
                 || ()
             },
             drug_info
         );
+    }
+
 
     html! {
  <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
