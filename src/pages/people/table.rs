@@ -3,29 +3,33 @@ use yew::prelude::*;
 use yew_hooks::use_async;
 use crate::ownhttp::myhttp::request;
 
-#[derive(Clone, Debug, Eq, PartialEq, Properties)]
-pub struct DrugInfo {}
+#[derive(Clone, Debug, Eq, PartialEq, Properties, Default)]
+pub struct DrugInfo {
+  pub title: String,
+    pub description: String,
+    pub body: String,
+    pub tag_list: Option<Vec<String>>,
+}
 
 #[function_component(DrugTable)]
 pub fn drug_table() -> Html {
-    let update_info = use_state(Vec::new());
+    let update_info = use_state(DrugInfo::default);
     let drug_info = use_async(async move {
+        log::info!("request in");
         request::<(), ()>(reqwest::Method::GET, "/".to_string(), ()).await
     });
 
-    {
-        let drug_info = drug_info.clone();
-        let update_info = update_info.clone();
+    log::info!("table");
+
         use_effect_with_deps(
             move |drug_info| {
                 if let Some(drug_info) = &drug_info.data {
-                    println!("{:?}", drug_info);
+                    log::info!("data was: {:?}", drug_info)
                 }
                 || ()
             },
-            drug_info,
+            drug_info
         );
-    };
 
     html! {
  <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
