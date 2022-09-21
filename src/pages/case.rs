@@ -1,21 +1,15 @@
 use yew::prelude::*;
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties)]
-pub struct CaseProps {
-    
-}
+pub struct CaseProps {}
 
-pub struct Case {
-    
-}
+pub struct Case {}
 impl Component for Case {
     type Message = ();
     type Properties = CaseProps;
 
     fn create(ctx: &Context<Self>) -> Self {
-        Self {
-            
-        }
+        Self {}
     }
 
     fn changed(&mut self, ctx: &Context<Self>) -> bool {
@@ -23,7 +17,6 @@ impl Component for Case {
     }
 
     fn view(&self, _ctx: &Context<Self>) -> Html {
-
         html! {
             <div>
                 {"Case"}

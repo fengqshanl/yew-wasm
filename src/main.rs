@@ -3,20 +3,18 @@ extern crate yew;
 #[macro_use]
 extern crate validator_derive;
 
-use yew::prelude::*;
+use route::{switch, Route};
 use yew::html::Scope;
+use yew::prelude::*;
 use yew_router::prelude::*;
-use route::{Route, switch};
 
-mod ownhttp;
 mod dropdown;
+mod error;
+mod ownhttp;
 mod pages;
 mod route;
-mod error;
 
-struct Msg {
-    
-}
+struct Msg {}
 
 struct Model {
     value: i64,
@@ -25,43 +23,43 @@ struct Model {
 }
 
 impl Model {
-    fn button_view(&self, link: &Scope<Self>) -> Html{
-        html!{
-            <aside class="menu">
-  <p class="menu-label">
-    {"药品出入库"}
-  </p>
-  <ul class="menu-list">
-    <li>
-        <Link<Route> classes={"is-ghost"} to={Route::People}>
-            {"库存清单"}
-        </Link<Route>>
-    </li>
-    <li>
-        <Link<Route> classes={"is-ghost"} to={Route::Guest}>
-            {"药品入库"}
-        </Link<Route>>
-    </li>
-    <li>
-        <Link<Route> classes={"is-ghost"} to={Route::Drug}>
-        {"药品出库"}
-        </Link<Route>>
-    </li>
-    <li>
-        <Link<Route> classes={"is-ghost"} to={Route::Case}>
-            {"药品出入库记录"}
-        </Link<Route>>
-    </li>
-    <li>
-        <Link<Route> classes={"is-ghost"} to={Route::Setting}>
-            {"出入库流水"}
-        </Link<Route>>
-    </li>
-  </ul>
-</aside>
-        }
+    fn button_view(&self, link: &Scope<Self>) -> Html {
+        html! {
+                    <aside class="menu">
+          <p class="menu-label">
+            {"药品出入库"}
+          </p>
+          <ul class="menu-list">
+            <li>
+                <Link<Route> classes={"is-ghost"} to={Route::People}>
+                    {"库存清单"}
+                </Link<Route>>
+            </li>
+            <li>
+                <Link<Route> classes={"is-ghost"} to={Route::Guest}>
+                    {"药品入库"}
+                </Link<Route>>
+            </li>
+            <li>
+                <Link<Route> classes={"is-ghost"} to={Route::Drug}>
+                {"药品出库"}
+                </Link<Route>>
+            </li>
+            <li>
+                <Link<Route> classes={"is-ghost"} to={Route::Case}>
+                    {"药品出入库记录"}
+                </Link<Route>>
+            </li>
+            <li>
+                <Link<Route> classes={"is-ghost"} to={Route::Setting}>
+                    {"出入库流水"}
+                </Link<Route>>
+            </li>
+          </ul>
+        </aside>
+                }
     }
-    fn login_view(&self, link:&Scope<Self>) -> Html {
+    fn login_view(&self, link: &Scope<Self>) -> Html {
         html! {
             <div class="top-info">
                 <div>
@@ -74,13 +72,12 @@ impl Model {
         }
     }
     fn logo_view(&self, link: &Scope<Self>) -> Html {
-        html!{
+        html! {
             <div class="top-logo">
                 {"logo"}
             </div>
         }
     }
-    
 }
 
 impl Component for Model {
@@ -97,7 +94,7 @@ impl Component for Model {
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            _ => false
+            _ => false,
         }
     }
 

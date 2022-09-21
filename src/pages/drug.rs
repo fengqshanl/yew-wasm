@@ -1,21 +1,15 @@
 use yew::prelude::*;
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties)]
-pub struct DrugProps {
-    
-}
+pub struct DrugProps {}
 
-pub struct Drug {
-    
-}
+pub struct Drug {}
 impl Component for Drug {
     type Message = ();
     type Properties = DrugProps;
 
     fn create(ctx: &Context<Self>) -> Self {
-        Self {
-            
-        }
+        Self {}
     }
 
     fn changed(&mut self, ctx: &Context<Self>) -> bool {
@@ -23,7 +17,6 @@ impl Component for Drug {
     }
 
     fn view(&self, _ctx: &Context<Self>) -> Html {
-
         html! {
             <div>
                 {"Drug"}

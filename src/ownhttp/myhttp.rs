@@ -1,5 +1,5 @@
-use serde::{de::DeserializeOwned, Serialize};
 use crate::error::{Error, ErrorInfo};
+use serde::{de::DeserializeOwned, Serialize};
 
 // const API_ROOT: String = String::from("localhost:9876");
 
@@ -25,13 +25,15 @@ where
     log::info!("5");
 
     let response = builder.send().await;
-    log::info!("6");
+    log::info!("6: {:?}", response);
 
     if let Ok(data) = response {
         if data.status().is_success() {
+            log::info!("http success:{:?}", data);
             let data: Result<T, _> = data.json::<T>().await;
+            log::info!("data json:{:?}", data);
             if let Ok(data) = data {
-                log::debug!("Response: {:?}", data);
+                log::info!("Response: {:?}", data);
                 Ok(data)
             } else {
                 Err(Error::DeserializeError)

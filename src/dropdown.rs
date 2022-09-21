@@ -3,7 +3,7 @@ use yew::{html, Component, Context, Html, Properties};
 #[derive(Debug, Eq, PartialEq, Properties)]
 pub struct DropDownProps {
     pub drop_list: Vec<String>,
-    pub title: String
+    pub title: String,
 }
 
 pub struct DropDown;
@@ -21,7 +21,7 @@ impl Component for DropDown {
             <div class="drop-menu">
                 <div class="drop-menu-title">{ctx.props().title.clone()}</div>
                 <div class="drop-menu-list">
-                { for ctx.props().drop_list.iter().map(|p| 
+                { for ctx.props().drop_list.iter().map(|p|
                     html! {
                         <div class="dropdown-menu">
                             {p}

@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use thiserror::Error as ThisError;
 
 /// Define all possible errors

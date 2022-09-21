@@ -1,7 +1,8 @@
-use yew::{Html, html};
 use pages::{
-    page_not_found::PageNotFound, people::index::People, setting::Setting, case::Case, drug::Drug, guest::Guest
+    case::Case, drug::Drug, guest::Guest, page_not_found::PageNotFound, people::index::People,
+    setting::Setting,
 };
+use yew::{html, Html};
 use yew_router::prelude::*;
 
 use crate::pages;

@@ -1,10 +1,9 @@
+use crate::ownhttp::myhttp::request;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
-use crate::ownhttp::myhttp::request;
 
 #[function_component(Guest)]
 pub fn guest_component() -> Html {
-
     fn on_reset(e: MouseEvent) {
         // request(reqwest::Method::GET, "/".to_string(), ())
         println!("reset reset reset");
@@ -14,7 +13,7 @@ pub fn guest_component() -> Html {
         log::info!("article");
         use_async(async move {
             log::info!("request");
-            request::<(), ()>(reqwest::Method::GET,"/".to_string(),()).await
+            request::<(), ()>(reqwest::Method::GET, "/".to_string(), ()).await
         })
     };
 
@@ -22,9 +21,7 @@ pub fn guest_component() -> Html {
 
     let onclick = {
         log::info!("click");
-        Callback::from(move |_| {
-            article_delete.run()
-        })
+        Callback::from(move |_| article_delete.run())
     };
 
     html! {
@@ -95,7 +92,7 @@ pub fn guest_component() -> Html {
                             <button type="submit" class="button is-light" onclick={on_reset} >{"重置"}</button>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </form>
