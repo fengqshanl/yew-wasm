@@ -1,5 +1,8 @@
+use reqwest::Method;
 use crate::error::{Error, ErrorInfo};
 use serde::{de::DeserializeOwned, Serialize};
+use yew::UseStateHandle;
+use crate::pages::people::table::DrugInfo;
 
 // const API_ROOT: String = String::from("localhost:9876");
 

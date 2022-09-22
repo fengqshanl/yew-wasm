@@ -24,3 +24,14 @@ wasm-logger = "0.2.0"
 wee_alloc = "0.4.5"
 validator = { version = "0.16.0", features = ["derive"] }
 validator_derive = "0.16.0"
+
+[dependencies.web-sys]
+version = "0.3"
+features = [
+    "Document",
+    "Element",
+    "Node",
+    "Window",
+    "HtmlCollection",
+    "HtmlInputElement",
+]

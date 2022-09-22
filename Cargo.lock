@@ -1460,6 +1460,7 @@ dependencies = [
  "validator_derive",
  "wasm-bindgen",
  "wasm-logger",
+ "web-sys",
  "wee_alloc",
  "yew",
  "yew-hooks",
