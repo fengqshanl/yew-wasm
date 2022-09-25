@@ -23,6 +23,7 @@ pub struct DrugInfo {
     pub store_up: String,
     pub taboo: String,
     pub usage_dosage: String,
+    pub a_b_classify: String,
 }
 
 #[function_component(DrugTable)]
@@ -70,6 +71,7 @@ pub fn drug_table() -> Html {
                             specification: drug_info.specification.to_string(),
                             store_up: drug_info.store_up.to_string(),
                             taboo: drug_info.taboo.to_string(),
+                            a_b_classify: drug_info.a_b_classify.to_string(),
                             usage_dosage: drug_info.usage_dosage.to_string(),
                         })
                         .collect()
@@ -85,20 +87,9 @@ pub fn drug_table() -> Html {
         <tr>
           <th>{"序号"}</th>
           <th>{"药品名称"}</th>
-          <th>{"药品编号"}</th>
-          <th>{"成分"}</th>
-          <th>{"性状"}</th>
-          <th>{"功能主治"}</th>
-          <th>{"规格"}</th>
+          <th>{"分类"}</th>
           <th>{"用法用量"}</th>
-          <th>{"不良反应"}</th>
-          <th>{"禁忌"}</th>
             <th>{"注意事项"}</th>
-          <th>{"贮藏"}</th>
-          <th>{"有效期"}</th>
-          <th>{"生产日期"}</th>
-          <th>{"批准文号"}</th>
-          <th>{"生产企业"}</th>
         </tr>
       </thead>
       <tbody>
@@ -109,20 +100,9 @@ pub fn drug_table() -> Html {
                             <tr>
                                 <th>{"1"}</th>
                                 <td>{&info.name}</td>
-                                <td>{&info.drug_number}</td>
-                                <td>{&info.ingredient}</td>
-                                <td>{&info.character}</td>
-                                <td>{&info.major_function}</td>
-                                <td>{&info.specification}</td>
+                                <td>{&info.a_b_classify}</td>
                                 <td>{&info.usage_dosage}</td>
-                                <td>{&info.adverse_reaction}</td>
-                                <td>{&info.taboo}</td>
                                 <td>{&info.matters_need_attention}</td>
-                                <td>{&info.store_up}</td>
-                                <td>{&info.expiry_date}</td>
-                                <td>{&info.produced_time}</td>
-                                <td>{&info.approval_number}</td>
-                                <td>{&info.manufacturing_enterprise}</td>
                             </tr>
                         }
                     })
