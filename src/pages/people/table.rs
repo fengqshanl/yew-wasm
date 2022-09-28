@@ -1,14 +1,15 @@
 use crate::ownhttp::myhttp::request;
 use gloo::console::externs::log;
-use serde::{ Deserialize, Serialize };
+use serde::{Deserialize, Serialize};
+use serde::de::Unexpected::Bool;
 use yew::prelude::*;
-use yew::{ html, Component, Context, Html, Properties };
-use yew_hooks::{ use_async, use_effect_once };
+use yew::{html, Component, Context, Html, Properties};
+use yew_hooks::{use_async, use_effect_once};
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties, Default, Deserialize, Serialize)]
 pub struct DrugInfo {
     pub drug_id: String,
-    // pub drug_number: String,
+    pub drug_number: i64,
     pub class_id: String,
     pub name: String,
     // pub adverse_reaction: String,
@@ -28,12 +29,20 @@ pub struct DrugInfo {
 }
 
 #[function_component(DrugTable)]
-pub fn drug_table() -> Html {
+pub fn drug_table() -> HTML {
     let update_info: UseStateHandle<Vec<DrugInfo>> = use_state(Vec::default);
+    let visible: UseStateHandle<bool> = use_state(bool::default);
     let drug_info = use_async(async move {
         log::info!("request in");
         request::<(), Vec<DrugInfo>>(reqwest::Method::GET, "/drug".to_string(), ()).await
     });
+
+    let onclick = {
+        let visible = visible.clone();
+        Callback::from(move |_| {
+            visible.set(!*visible)
+        })
+    };
 
     log::info!("table");
 
@@ -58,40 +67,31 @@ pub fn drug_table() -> Html {
                         .iter()
                         .map(|drug_info| DrugInfo {
                             drug_id: drug_info.drug_id.to_string(),
-                            // drug_number: drug_info.drug_number.to_string(),
                             class_id: drug_info.class_id.to_string(),
                             name: drug_info.name.to_string(),
-                            // adverse_reaction: drug_info.adverse_reaction.to_string(),
-                            // character: drug_info.character.to_string(),
-                            // approval_number: drug_info.approval_number.to_string(),
-                            // expiry_date: drug_info.expiry_date,
-                            // ingredient: drug_info.ingredient.to_string(),
-                            // major_function: drug_info.major_function.to_string(),
-                            // manufacturing_enterprise: drug_info.manufacturing_enterprise.to_string(),
                             matters_need_attention: drug_info.matters_need_attention.to_string(),
-                            // produced_time: drug_info.produced_time.to_string(),
-                            // specification: drug_info.specification.to_string(),
-                            // store_up: drug_info.store_up.to_string(),
-                            // taboo: drug_info.taboo.to_string(),
                             a_b_classify: drug_info.a_b_classify.to_string(),
                             usage_dosage: drug_info.usage_dosage.to_string(),
+                            drug_number: drug_info.drug_number,
                         })
                         .collect()
                 );
             }
             || ()
-        }, drug_info);
+        }, drug_info)
     }
 
     html! {
+        <>
+        <button class="button is-link" {onclick}>{"药品入库登记"}</button>
      <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
       <thead>
         <tr>
-          <th>{"序号"}</th>
-          <th>{"药品名称"}</th>
-          <th>{"分类"}</th>
-          <th>{"用法用量"}</th>
-            <th>{"注意事项"}</th>
+          <th class="table-index">{"序号"}</th>
+          <th class="table-drug-name">{"药品名称"}</th>
+          <th class="table-drug-classify">{"分类"}</th>
+          <th class="table-drug-usage-dosage">{"用法用量"}</th>
+          <th class="table-matters-attention">{"注意事项"}</th>
         </tr>
       </thead>
       <tbody>
@@ -104,6 +104,7 @@ pub fn drug_table() -> Html {
                                 <td>{&info.name}</td>
                                 <td>{&info.a_b_classify}</td>
                                 <td>{&info.usage_dosage}</td>
+                                <td>{&info.drug_number}</td>
                                 <td>{&info.matters_need_attention}</td>
                             </tr>
                         }
@@ -111,5 +112,25 @@ pub fn drug_table() -> Html {
             }
       </tbody>
     </table>
+        { if *visible {
+            html!{<div class="modal is-active">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">{"Modal title"}</p>
+      <button class="delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      {"content"}
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success">{"Save changes"}</button>
+      <button class="button">{"Cancel"}</button>
+    </footer>
+  </div>
+</div>}} else {
+            html!{}
+        }}
+        </>
         }
 }

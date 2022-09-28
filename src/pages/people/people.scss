@@ -1,0 +1,22 @@
+.table{
+  &-index{
+    min-width: 80px;
+    text-align: center;
+  }
+  &-drug-name{
+    min-width: 120px;
+    text-align: center;
+  }
+  &-drug-classify{
+    min-width: 50px;
+    text-align: center;
+  }
+  &-drug-usage-dosage{
+    min-width: 150px;
+    text-align: center;
+  }
+  &-matters-attention{
+    min-width: 200px;
+    text-align: center;
+  }
+}
