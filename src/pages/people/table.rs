@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde::de::Unexpected::Bool;
 use yew::prelude::*;
 use yew::{html, Component, Context, Html, Properties};
-use yew::Callback::Callback;
+use yew::Callback;
 use yew_hooks::{use_async, use_effect_once};
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties, Default, Deserialize, Serialize)]
@@ -47,16 +47,16 @@ pub fn drug_table() -> HTML {
 
     let on_cancel = {
         let visible = visible.clone();
-        Callback::from {move |_| {
+        Callback::from(move |_| {
             visible.set(!*visible)
-        }}
+        })
     };
 
     let on_save = {
         let visible = visible.clone();
-        Callback::from {move |_| {
+        Callback::from(move |_| {
             visible.set(!*visible)
-        }}
+        })
     };
 
     log::info!("table");
@@ -132,15 +132,16 @@ pub fn drug_table() -> HTML {
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">{"Modal title"}</p>
-      <button class="delete" aria-label="close"></button>
+      <p class="modal-card-title">{"药品入库"}</p>
     </header>
     <section class="modal-card-body">
-      {"content"}
+      {"请填写药品"}
+                <input class="input" type="text"  placeholder="药品名称"
+                            value={update_info.matters_need_attention.clone()}  oninput={oninput_matters_need_attention}  />
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-success"  onclick={on_save}>{"Save changes"}</button>
-      <button class="button" onclick={on_cancel}>{"Cancel"}</button>
+      <button class="button is-success"  onclick={on_save}>{"入库"}</button>
+      <button class="button" onclick={on_cancel}>{"取消"}</button>
     </footer>
   </div>
 </div>}} else {
