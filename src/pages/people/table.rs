@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde::de::Unexpected::Bool;
 use yew::prelude::*;
 use yew::{html, Component, Context, Html, Properties};
+use yew::Callback::Callback;
 use yew_hooks::{use_async, use_effect_once};
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties, Default, Deserialize, Serialize)]
@@ -42,6 +43,20 @@ pub fn drug_table() -> HTML {
         Callback::from(move |_| {
             visible.set(!*visible)
         })
+    };
+
+    let on_cancel = {
+        let visible = visible.clone();
+        Callback::from {move |_| {
+            visible.set(!*visible)
+        }}
+    };
+
+    let on_save = {
+        let visible = visible.clone();
+        Callback::from {move |_| {
+            visible.set(!*visible)
+        }}
     };
 
     log::info!("table");
@@ -124,8 +139,8 @@ pub fn drug_table() -> HTML {
       {"content"}
     </section>
     <footer class="modal-card-foot">
-      <button class="button is-success">{"Save changes"}</button>
-      <button class="button">{"Cancel"}</button>
+      <button class="button is-success"  onclick={on_save}>{"Save changes"}</button>
+      <button class="button" onclick={on_cancel}>{"Cancel"}</button>
     </footer>
   </div>
 </div>}} else {
