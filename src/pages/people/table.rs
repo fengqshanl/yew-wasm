@@ -1,9 +1,9 @@
 use crate::ownhttp::myhttp::request;
 use gloo::console::externs::log;
 use serde::{Deserialize, Serialize};
-use serde::de::Unexpected::Bool;
+use crate::components::modal::OwnModalComponent;
 use yew::prelude::*;
-use yew::{html, Component, Context, Html, Properties};
+use yew::{html, Component, Html, Properties};
 use yew::Callback;
 use yew_hooks::{use_async, use_effect_once};
 
@@ -30,7 +30,7 @@ pub struct DrugInfo {
 }
 
 #[function_component(DrugTable)]
-pub fn drug_table() -> HTML {
+pub fn drug_table() -> Html {
     let update_info: UseStateHandle<Vec<DrugInfo>> = use_state(Vec::default);
     let visible: UseStateHandle<bool> = use_state(bool::default);
     let drug_info = use_async(async move {
@@ -74,13 +74,11 @@ pub fn drug_table() -> HTML {
         let update_info = update_info.clone();
         let drug_info = drug_info.clone();
         use_effect_with_deps(move |drug_info| {
-            log::info!("out {:?}", drug_info.data);
             if let Some(drug_info) = &drug_info.data {
-                log::info!("in");
                 update_info.set(
                     drug_info
                         .iter()
-                        .map(|drug_info| DrugInfo {
+                        .map(move |drug_info| DrugInfo {
                             drug_id: drug_info.drug_id.to_string(),
                             class_id: drug_info.class_id.to_string(),
                             name: drug_info.name.to_string(),
@@ -90,13 +88,13 @@ pub fn drug_table() -> HTML {
                             drug_number: drug_info.drug_number,
                         })
                         .collect()
-                );
+                )
             }
             || ()
         }, drug_info)
     }
 
-    html! {
+    return html! {
         <>
         <button class="button is-link" {onclick}>{"药品入库登记"}</button>
      <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
@@ -128,25 +126,18 @@ pub fn drug_table() -> HTML {
       </tbody>
     </table>
         { if *visible {
-            html!{<div class="modal is-active">
-  <div class="modal-background"></div>
-  <div class="modal-card">
-    <header class="modal-card-head">
-      <p class="modal-card-title">{"药品入库"}</p>
-    </header>
-    <section class="modal-card-body">
-      {"请填写药品"}
-                <input class="input" type="text"  placeholder="药品名称"
-                            value={update_info.matters_need_attention.clone()}  oninput={oninput_matters_need_attention}  />
-    </section>
-    <footer class="modal-card-foot">
-      <button class="button is-success"  onclick={on_save}>{"入库"}</button>
-      <button class="button" onclick={on_cancel}>{"取消"}</button>
-    </footer>
-  </div>
-</div>}} else {
+            html!{
+               <OwnModalComponent
+                    name={"药品名称".to_string()}
+                    save={on_save.clone()}
+                    cancel={on_cancel.clone()}
+                >
+                    <div>{"children"}</div>
+                </OwnModalComponent>
+            }
+        } else {
             html!{}
         }}
         </>
-        }
+        };
 }

@@ -13,6 +13,7 @@ mod error;
 mod ownhttp;
 mod pages;
 mod route;
+mod components;
 
 struct Msg {}
 
