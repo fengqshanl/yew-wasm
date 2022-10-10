@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::components::modal::OwnModalComponent;
 use yew::prelude::*;
 use yew::{html, Component, Html, Properties};
+use crate::components::table::OwnTableComponent;
 use yew::Callback;
 use yew_hooks::{use_async, use_effect_once};
 
@@ -32,6 +33,7 @@ pub struct DrugInfo {
 #[function_component(DrugTable)]
 pub fn drug_table() -> Html {
     let update_info: UseStateHandle<Vec<DrugInfo>> = use_state(Vec::default);
+    let columns: Vec<String> = vec!["序号","药品名称","分类","用法用量","注意事项"].iter().map(|c| c.to_string()).collect();;
     let visible: UseStateHandle<bool> = use_state(bool::default);
     let drug_info = use_async(async move {
         log::info!("request in");
@@ -95,36 +97,9 @@ pub fn drug_table() -> Html {
     }
 
     return html! {
-        <>
-        <button class="button is-link" {onclick}>{"药品入库登记"}</button>
-     <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
-      <thead>
-        <tr>
-          <th class="table-index">{"序号"}</th>
-          <th class="table-drug-name">{"药品名称"}</th>
-          <th class="table-drug-classify">{"分类"}</th>
-          <th class="table-drug-usage-dosage">{"用法用量"}</th>
-          <th class="table-matters-attention">{"注意事项"}</th>
-        </tr>
-      </thead>
-      <tbody>
-            {
-                for update_info.clone().iter().map(|info|{
-                log::info!("info: {:?}", info);
-                        html!{
-                            <tr>
-                                <th>{"1"}</th>
-                                <td>{&info.name}</td>
-                                <td>{&info.a_b_classify}</td>
-                                <td>{&info.usage_dosage}</td>
-                                <td>{&info.drug_number}</td>
-                                <td>{&info.matters_need_attention}</td>
-                            </tr>
-                        }
-                    })
-            }
-      </tbody>
-    </table>
+        <div class="people-components">
+        <button class="button is-link drug-in-out-button" {onclick}>{"药品入库登记"}</button>
+        <OwnTableComponent data={update_info.clone()} columns={columns} />
         { if *visible {
             html!{
                <OwnModalComponent
@@ -138,6 +113,6 @@ pub fn drug_table() -> Html {
         } else {
             html!{}
         }}
-        </>
+        </div>
         };
 }
