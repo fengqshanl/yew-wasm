@@ -1,6 +1,7 @@
 use crate::ownhttp::myhttp::request;
 use gloo::console::externs::log;
 use serde::{Deserialize, Serialize};
+use web_sys::HtmlInputElement;
 use crate::components::modal::OwnModalComponent;
 use yew::prelude::*;
 use yew::{html, Component, Html, Properties};
@@ -33,6 +34,7 @@ pub struct DrugInfo {
 #[function_component(DrugTable)]
 pub fn drug_table() -> Html {
     let update_info: UseStateHandle<Vec<DrugInfo>> = use_state(Vec::default);
+    let add_info: UseStateHandle<DrugInfo> = use_state(DrugInfo::default);
     let columns: Vec<String> = vec!["序号","药品名称","分类","用法用量","注意事项"].iter().map(|c| c.to_string()).collect();;
     let visible: UseStateHandle<bool> = use_state(bool::default);
     let drug_info = use_async(async move {
@@ -61,7 +63,35 @@ pub fn drug_table() -> Html {
         })
     };
 
-    log::info!("table");
+    let oninput_name = {
+        let add_info = add_info.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*add_info).clone();
+            info.name = input.value();
+            add_info.set(info);
+        })
+    };
+
+    let oninput_usage_dosage = {
+        let add_info = add_info.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*add_info).clone();
+            info.usage_dosage = input.value();
+            add_info.set(info);
+        })
+    };
+
+    let oninput_matters_need_attention = {
+        let add_info = add_info.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*add_info).clone();
+            info.matters_need_attention = input.value();
+            add_info.set(info);
+        })
+    };
 
     {
         let drug_info = drug_info.clone();
@@ -107,7 +137,39 @@ pub fn drug_table() -> Html {
                     save={on_save.clone()}
                     cancel={on_cancel.clone()}
                 >
-                    <div>{"children"}</div>
+                <div class="columns is-2">
+                        <div class="column">
+                            <input class="input" type="text" required={true} name="name" id="name" placeholder="药品名称"
+                            value={add_info.name.clone()}  oninput={oninput_name} />
+                        </div>
+                        <div class="column">
+                        <div class="file is-primary">
+                        <label class="file-label">
+                          <input class="file-input" type="file" name="resume" />
+                          <span class="file-cta">
+                            <span class="file-icon">
+                              <i class="fas fa-upload" />
+                            </span>
+                            <span class="file-label">
+                              {"请选择图片"}
+                            </span>
+                          </span>
+                        </label>
+                      </div>
+                        </div>
+                    </div>
+                <div class="columns is-2">
+                        <div class="column">
+                            <input class="input" type="text"  name="usage_dosage" id="usage_dosage" placeholder="用法用量"
+                            value={add_info.usage_dosage.clone()}  oninput={oninput_usage_dosage}  />
+                        </div>
+                    </div>
+                    <div class="columns is-2">
+                        <div class="column">
+                            <input class="input" type="text"  name="matters_need_attention" id="matters_need_attention" placeholder="注意事项"
+                            value={add_info.matters_need_attention.clone()}  oninput={oninput_matters_need_attention}  />
+                        </div>
+                    </div>
                 </OwnModalComponent>
             }
         } else {

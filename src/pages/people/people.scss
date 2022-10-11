@@ -22,8 +22,10 @@
 }
 .people-components{
   width: 100%;
-   
+  display: flex;
+  padding: 1em;
+  flex-direction: column;
   .drug-in-out-button{
-    margin-left: auto;
+    margin: 0 0 1em auto !important;
   }
 }
