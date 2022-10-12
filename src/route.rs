@@ -27,22 +27,22 @@ pub enum Route {
 pub fn switch(routes: &Route) -> Html {
     match routes.clone() {
         Route::People => {
-            html! { <People /> }
+            return html! { <People /> }
         }
         Route::Guest => {
-            html! { <Guest /> }
+           return html! { <Guest /> }
         }
         Route::Drug => {
-            html! { <Drug /> }
+           return html! { <Drug /> }
         }
         Route::Case => {
-            html! { <Case /> }
+           return html! { <Case /> }
         }
         Route::Setting => {
-            html! { <Setting /> }
+           return html! { <Setting /> }
         }
         Route::NotFound => {
-            html! { <PageNotFound /> }
+           return html! { <PageNotFound /> }
         }
     }
 }

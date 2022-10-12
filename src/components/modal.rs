@@ -1,7 +1,6 @@
 use web_sys::MouseEvent;
 use yew::prelude::*;
-use yew_router::prelude::*;
-use yew::{Html, Callback};
+use yew::{ Callback};
 
 #[derive(Properties, Clone, PartialEq, Debug)]
 pub struct ModalProps {

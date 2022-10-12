@@ -1,17 +1,13 @@
-use crate::pages::people::table::DrugInfo;
-use web_sys::MouseEvent;
 use yew::prelude::*;
-use yew::{Callback, Html};
-use yew_router::prelude::*;
 
 #[derive(Properties, Clone, PartialEq, Debug)]
-pub struct TableProps {
-    pub data: UseStateHandle<Vec<DrugInfo>>,
+pub struct TableProps<T> {
+    pub data: UseStateHandle<Vec<T>>,
     pub columns: Vec<String>,
 }
 
 #[function_component(OwnTableComponent)]
-pub fn table(props: &TableProps) -> Html {
+pub fn table<T>(props: &TableProps<T>) -> Html {
     return html! {
             <div>
                 <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">

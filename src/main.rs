@@ -1,6 +1,4 @@
-#[macro_use]
 extern crate yew;
-#[macro_use]
 extern crate validator_derive;
 
 use route::{switch, Route};
@@ -105,13 +103,6 @@ impl Component for Model {
         html! {
             <BrowserRouter>
                 <div class="layout">
-                    <div class="top">
-                        {self.logo_view(link)}
-                        <div>
-                            {"药品出入库管理平台"}
-                        </div>
-                        {self.login_view(link)}
-                    </div>
                     <div class="content">
                             <div class="content-left">
                                 {self.button_view(link)}

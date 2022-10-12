@@ -1,10 +1,9 @@
 use crate::ownhttp::myhttp::request;
-use gloo::console::externs::log;
 use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
 use crate::components::modal::OwnModalComponent;
 use yew::prelude::*;
-use yew::{html, Component, Html, Properties};
+use yew::{html, Properties};
 use crate::components::table::OwnTableComponent;
 use yew::Callback;
 use yew_hooks::{use_async, use_effect_once};
@@ -35,7 +34,7 @@ pub struct DrugInfo {
 pub fn drug_table() -> Html {
     let update_info: UseStateHandle<Vec<DrugInfo>> = use_state(Vec::default);
     let add_info: UseStateHandle<DrugInfo> = use_state(DrugInfo::default);
-    let columns: Vec<String> = vec!["序号","药品名称","分类","用法用量","注意事项"].iter().map(|c| c.to_string()).collect();;
+    let columns: Vec<String> = vec!["序号","药品名称","分类","用法用量","注意事项"].iter().map(|c| c.to_string()).collect();
     let visible: UseStateHandle<bool> = use_state(bool::default);
     let drug_info = use_async(async move {
         log::info!("request in");

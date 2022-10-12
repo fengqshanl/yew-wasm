@@ -1,26 +1,24 @@
 use yew::prelude::*;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Eq, PartialEq, Properties)]
-pub struct SettingProps {}
+#[derive(Clone, Debug, Eq, PartialEq, Properties, Default, Deserialize, Serialize)]
+pub struct RunningWater {
+    pub drug_id: String,
+    pub drug_number: i64,
+    pub class_id: String,
+    pub name: String,
+    pub matters_need_attention: String,
+    pub usage_dosage: String,
+    pub a_b_classify: String,
+}
 
-pub struct Setting {}
-impl Component for Setting {
-    type Message = ();
-    type Properties = SettingProps;
-
-    fn create(ctx: &Context<Self>) -> Self {
-        Self {}
-    }
-
-    fn changed(&mut self, ctx: &Context<Self>) -> bool {
-        false
-    }
-
-    fn view(&self, _ctx: &Context<Self>) -> Html {
-        html! {
+#[function_component(Setting)]
+pub fn setting() -> Html {
+    // let water_info: UseStateHandle<Vec<RunningWater>> = use_state(Vec::default);
+    let columns = vec!["序号","出入库药品","出入库时间","价格"].iter().map(|value|value.to_string()).collect();
+    return html! {
             <div>
-                {"setting"}
+                // <OwnTableComponent data={water_info.clone()} columns={columns} />
             </div>
-        }
-    }
+        };
 }
