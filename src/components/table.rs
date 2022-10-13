@@ -2,13 +2,21 @@ use yew::prelude::*;
 
 #[derive(Properties, Clone, PartialEq, Debug)]
 pub struct TableProps<T> {
-    pub data: UseStateHandle<Vec<T>>,
-    pub columns: Vec<String>,
+    #[prop_or_default]
+    pub data: Vec<T>,
+    pub columns: Vec<ColumnPropType>,
+}
+
+pub struct DataPropType {}
+
+pub struct ColumnPropType {
+    pub title: String,
+    pub dataIndex: String,
 }
 
 #[function_component(OwnTableComponent)]
 pub fn table<T>(props: &TableProps<T>) -> Html {
-    return html! {
+    html! {
             <div>
                 <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                     <thead>
@@ -64,5 +72,5 @@ pub fn table<T>(props: &TableProps<T>) -> Html {
       </ul>
     // </nav>
             </div>
-        };
+        }
 }
