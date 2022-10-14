@@ -1,21 +1,47 @@
+use std::fmt::{Debug, Display};
+
 use yew::prelude::*;
 
 #[derive(Properties, Clone, PartialEq, Debug)]
-pub struct TableProps<T> {
+pub struct TableProps<D: Properties + Clone + PartialEq + Debug> {
     #[prop_or_default]
-    pub data: Vec<T>,
+    pub data: Vec<D>,
     pub columns: Vec<ColumnPropType>,
 }
 
-pub struct DataPropType {}
-
+#[derive(Properties, Clone, PartialEq, Debug)]
 pub struct ColumnPropType {
     pub title: String,
-    pub dataIndex: String,
+    pub dataIndex: String
+}
+
+impl ColumnPropType {
+  fn render<V: Display, R>(&self, value: V, record: R ) -> Html{
+    html!{{value}}
+  }
 }
 
 #[function_component(OwnTableComponent)]
-pub fn table<T>(props: &TableProps<T>) -> Html {
+pub fn table<D: Properties + Clone + PartialEq + Debug + Default>(props: &TableProps<D>) -> Html {
+    let data_list: UseStateHandle<Vec<Html>> = use_state(Vec::default);
+  
+  {
+        let data_list = data_list.clone();
+        let data_info = props.data.clone();
+        let columns = props.columns.clone();
+        use_effect_with_deps(move |data| {
+          for (index, row) in data.iter().enumerate() {
+            columns.iter().map(|column|{
+              let html = html!{
+                <th>{column.render(column.dataIndex, index)}</th>
+              };
+              let data_li = *data_list.clone();
+              data_li.push(html);
+              data_list.set(data_li);
+            });
+          } || ()
+        }, data_info)
+    }
     html! {
             <div>
                 <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
@@ -24,25 +50,14 @@ pub fn table<T>(props: &TableProps<T>) -> Html {
                 {
                     for props.columns.clone().iter().map(|c| {
                         html! {
-                            <th class="table-header-col">{c}</th>
+                            <th class="table-header-col">{c.title}</th>
                         }
                 })}
             </tr>
           </thead>
           <tbody>
                 {
-                    for props.data.clone().iter().map(|info|{
-                            html!{
-                                <tr>
-                                    <th>{"1"}</th>
-                                    <td>{&info.name}</td>
-                                    <td>{&info.a_b_classify}</td>
-                                    <td>{&info.usage_dosage}</td>
-                                    <td>{&info.drug_number}</td>
-                                    <td>{&info.matters_need_attention}</td>
-                                </tr>
-                            }
-                        })
+                    for *data_list.clone()
                 }
           </tbody>
         </table>

@@ -4,7 +4,7 @@ use web_sys::HtmlInputElement;
 use crate::components::modal::OwnModalComponent;
 use yew::prelude::*;
 use yew::{html, Properties};
-use crate::components::table::OwnTableComponent;
+use crate::components::table::{OwnTableComponent, ColumnPropType};
 use yew::Callback;
 use yew_hooks::{use_async, use_effect_once};
 
@@ -34,7 +34,27 @@ pub struct DrugInfo {
 pub fn drug_table() -> Html {
     let update_info: UseStateHandle<Vec<DrugInfo>> = use_state(Vec::default);
     let add_info: UseStateHandle<DrugInfo> = use_state(DrugInfo::default);
-    let columns: Vec<String> = vec!["序号","药品名称","分类","用法用量","注意事项"].iter().map(|c| c.to_string()).collect();
+    let columns: Vec<ColumnPropType> = vec![
+        ColumnPropType{
+            title: "序号".to_string(),
+            dataIndex: "index".to_string()
+        }, 
+        ColumnPropType{
+            title: "药品名称".to_string(),
+            dataIndex: "drug_name".to_string()
+        },
+        ColumnPropType{
+            title: "分类".to_string(),
+            dataIndex: "drug_kind".to_string()
+        },
+        ColumnPropType{
+            title: "用法用量".to_string(),
+            dataIndex: "usage_dosage".to_string()
+        },
+        ColumnPropType{
+            title:"注意事项".to_string(),
+            dataIndex: "matters_need_attention".to_string()
+        }];
     let visible: UseStateHandle<bool> = use_state(bool::default);
     let drug_info = use_async(async move {
         log::info!("request in");
@@ -128,7 +148,7 @@ pub fn drug_table() -> Html {
     return html! {
         <div class="people-components">
         <button class="button is-link drug-in-out-button" {onclick}>{"药品入库登记"}</button>
-        <OwnTableComponent data={update_info.clone()} columns={columns} />
+        <OwnTableComponent<DrugInfo> data={*update_info.clone()} columns={columns} />
         { if *visible {
             html!{
                <OwnModalComponent

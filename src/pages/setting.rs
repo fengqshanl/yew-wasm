@@ -15,7 +15,7 @@ pub struct RunningWater {
 #[function_component(Setting)]
 pub fn setting() -> Html {
     // let water_info: UseStateHandle<Vec<RunningWater>> = use_state(Vec::default);
-    let columns = vec!["序号","出入库药品","出入库时间","价格"].iter().map(|value|value.to_string()).collect();
+    // let columns = vec!["序号","出入库药品","出入库时间","价格"];
     return html! {
             <div>
                 // <OwnTableComponent data={water_info.clone()} columns={columns} />
