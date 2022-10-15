@@ -148,7 +148,7 @@ pub fn drug_table() -> Html {
     return html! {
         <div class="people-components">
         <button class="button is-link drug-in-out-button" {onclick}>{"药品入库登记"}</button>
-        <OwnTableComponent<DrugInfo> data={*update_info.clone()} columns={columns} />
+        <OwnTableComponent<DrugInfo> data={(*update_info).clone()} columns={columns} />
         { if *visible {
             html!{
                <OwnModalComponent

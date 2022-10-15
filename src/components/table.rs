@@ -16,31 +16,32 @@ pub struct ColumnPropType {
 }
 
 impl ColumnPropType {
-  fn render<V: Display, R>(&self, value: V, record: R ) -> Html{
+  fn render<V: Display, R>(&self, value: V, record: R, index: usize ) -> Html{
     html!{{value}}
   }
 }
 
 #[function_component(OwnTableComponent)]
-pub fn table<D: Properties + Clone + PartialEq + Debug + Default>(props: &TableProps<D>) -> Html {
+pub fn table<D>(props: &TableProps<D>) -> Html 
+  where D: Properties + Clone + PartialEq + Debug + Default + 'static {
     let data_list: UseStateHandle<Vec<Html>> = use_state(Vec::default);
   
   {
         let data_list = data_list.clone();
         let data_info = props.data.clone();
         let columns = props.columns.clone();
-        use_effect_with_deps(move |data| {
-          for (index, row) in data.iter().enumerate() {
-            columns.iter().map(|column|{
+        use_effect_with_deps(move |data_info| {
+          for (index, row) in data_info.clone().iter().enumerate() {
+            columns.clone().iter().map(|column|{
               let html = html!{
-                <th>{column.render(column.dataIndex, index)}</th>
+                <th>{column.clone().render(column.clone().dataIndex, row, index)}</th>
               };
-              let data_li = *data_list.clone();
+              let mut data_li = (*data_list).clone();
               data_li.push(html);
-              data_list.set(data_li);
+              data_list.set(data_li)
             });
           } || ()
-        }, data_info)
+        }, data_info);
     }
     html! {
             <div>
@@ -50,14 +51,14 @@ pub fn table<D: Properties + Clone + PartialEq + Debug + Default>(props: &TableP
                 {
                     for props.columns.clone().iter().map(|c| {
                         html! {
-                            <th class="table-header-col">{c.title}</th>
+                            <th class="table-header-col">{c.clone().title}</th>
                         }
                 })}
             </tr>
           </thead>
           <tbody>
                 {
-                    for *data_list.clone()
+                    for (*data_list).clone()
                 }
           </tbody>
         </table>
