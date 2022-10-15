@@ -9,39 +9,45 @@ pub struct TableProps<D: Properties + Clone + PartialEq + Debug> {
     pub columns: Vec<ColumnPropType>,
 }
 
-#[derive(Properties, Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct ColumnPropType {
     pub title: String,
-    pub dataIndex: String
+    pub data_index: String,
 }
 
 impl ColumnPropType {
-  fn render<V: Display, R>(&self, value: V, record: R, index: usize ) -> Html{
-    html!{{value}}
-  }
+    fn render<V: Display, R>(&self, value: V, _record: R, _index: usize) -> Html {
+        html! {{value}}
+    }
 }
 
 #[function_component(OwnTableComponent)]
-pub fn table<D>(props: &TableProps<D>) -> Html 
-  where D: Properties + Clone + PartialEq + Debug + Default + 'static {
+pub fn table<D>(props: &TableProps<D>) -> Html
+where
+    D: Properties + Clone + PartialEq + Debug + Default + 'static,
+{
     let data_list: UseStateHandle<Vec<Html>> = use_state(Vec::default);
-  
-  {
+
+    {
         let data_list = data_list.clone();
         let data_info = props.data.clone();
         let columns = props.columns.clone();
-        use_effect_with_deps(move |data_info| {
-          for (index, row) in data_info.clone().iter().enumerate() {
-            columns.clone().iter().map(|column|{
-              let html = html!{
-                <th>{column.clone().render(column.clone().dataIndex, row, index)}</th>
-              };
-              let mut data_li = (*data_list).clone();
-              data_li.push(html);
-              data_list.set(data_li)
-            });
-          } || ()
-        }, data_info);
+        use_effect_with_deps(
+            move |data_info| {
+                for (index, row) in data_info.clone().iter().enumerate() {
+                    for col in columns.clone().iter() {
+                        let html = html! {
+                          <th>{col.clone().render(col.clone().data_index, row, index)}</th>
+                        };
+                        let mut data_li = (*data_list).clone();
+                        data_li.push(html);
+                        data_list.set(data_li);
+                    }
+                }
+                || ()
+            },
+            data_info,
+        );
     }
     html! {
             <div>

@@ -1,11 +1,11 @@
+use crate::components::modal::OwnModalComponent;
+use crate::components::table::{ColumnPropType, OwnTableComponent};
 use crate::ownhttp::myhttp::request;
 use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
-use crate::components::modal::OwnModalComponent;
 use yew::prelude::*;
-use yew::{html, Properties};
-use crate::components::table::{OwnTableComponent, ColumnPropType};
 use yew::Callback;
+use yew::{html, Properties};
 use yew_hooks::{use_async, use_effect_once};
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties, Default, Deserialize, Serialize)]
@@ -35,26 +35,39 @@ pub fn drug_table() -> Html {
     let update_info: UseStateHandle<Vec<DrugInfo>> = use_state(Vec::default);
     let add_info: UseStateHandle<DrugInfo> = use_state(DrugInfo::default);
     let columns: Vec<ColumnPropType> = vec![
-        ColumnPropType{
+        ColumnPropType {
             title: "序号".to_string(),
-            dataIndex: "index".to_string()
-        }, 
-        ColumnPropType{
+            data_index: "index".to_string(),
+        },
+        ColumnPropType {
             title: "药品名称".to_string(),
-            dataIndex: "drug_name".to_string()
+            data_index: "drug_name".to_string(),
         },
-        ColumnPropType{
+        ColumnPropType {
             title: "分类".to_string(),
-            dataIndex: "drug_kind".to_string()
+            data_index: "drug_kind".to_string(),
         },
-        ColumnPropType{
+        ColumnPropType {
             title: "用法用量".to_string(),
-            dataIndex: "usage_dosage".to_string()
+            data_index: "usage_dosage".to_string(),
         },
-        ColumnPropType{
-            title:"注意事项".to_string(),
-            dataIndex: "matters_need_attention".to_string()
-        }];
+        ColumnPropType {
+            title: "注意事项".to_string(),
+            data_index: "matters_need_attention".to_string(),
+        },
+        ColumnPropType {
+            title: "价格".to_string(),
+            data_index: "drug_price".to_string(),
+        },
+        ColumnPropType {
+            title: "库存".to_string(),
+            data_index: "inventory".to_string(),
+        },
+        ColumnPropType {
+            title: "保质期".to_string(),
+            data_index: "shelf_life".to_string(),
+        },
+    ];
     let visible: UseStateHandle<bool> = use_state(bool::default);
     let drug_info = use_async(async move {
         log::info!("request in");
@@ -63,23 +76,17 @@ pub fn drug_table() -> Html {
 
     let onclick = {
         let visible = visible.clone();
-        Callback::from(move |_| {
-            visible.set(!*visible)
-        })
+        Callback::from(move |_| visible.set(!*visible))
     };
 
     let on_cancel = {
         let visible = visible.clone();
-        Callback::from(move |_| {
-            visible.set(!*visible)
-        })
+        Callback::from(move |_| visible.set(!*visible))
     };
 
     let on_save = {
         let visible = visible.clone();
-        Callback::from(move |_| {
-            visible.set(!*visible)
-        })
+        Callback::from(move |_| visible.set(!*visible))
     };
 
     let oninput_name = {
@@ -124,76 +131,81 @@ pub fn drug_table() -> Html {
     {
         let update_info = update_info.clone();
         let drug_info = drug_info.clone();
-        use_effect_with_deps(move |drug_info| {
-            if let Some(drug_info) = &drug_info.data {
-                update_info.set(
-                    drug_info
-                        .iter()
-                        .map(move |drug_info| DrugInfo {
-                            drug_id: drug_info.drug_id.to_string(),
-                            class_id: drug_info.class_id.to_string(),
-                            name: drug_info.name.to_string(),
-                            matters_need_attention: drug_info.matters_need_attention.to_string(),
-                            a_b_classify: drug_info.a_b_classify.to_string(),
-                            usage_dosage: drug_info.usage_dosage.to_string(),
-                            drug_number: drug_info.drug_number,
-                        })
-                        .collect()
-                )
-            }
-            || ()
-        }, drug_info)
+        use_effect_with_deps(
+            move |drug_info| {
+                if let Some(drug_info) = &drug_info.data {
+                    update_info.set(
+                        drug_info
+                            .iter()
+                            .map(move |drug_info| DrugInfo {
+                                drug_id: drug_info.drug_id.to_string(),
+                                class_id: drug_info.class_id.to_string(),
+                                name: drug_info.name.to_string(),
+                                matters_need_attention: drug_info
+                                    .matters_need_attention
+                                    .to_string(),
+                                a_b_classify: drug_info.a_b_classify.to_string(),
+                                usage_dosage: drug_info.usage_dosage.to_string(),
+                                drug_number: drug_info.drug_number,
+                            })
+                            .collect(),
+                    )
+                }
+                || ()
+            },
+            drug_info,
+        )
     }
 
     return html! {
-        <div class="people-components">
-        <button class="button is-link drug-in-out-button" {onclick}>{"药品入库登记"}</button>
-        <OwnTableComponent<DrugInfo> data={(*update_info).clone()} columns={columns} />
-        { if *visible {
-            html!{
-               <OwnModalComponent
-                    name={"药品名称".to_string()}
-                    save={on_save.clone()}
-                    cancel={on_cancel.clone()}
-                >
+    <div class="people-components">
+    <button class="button is-link drug-in-out-button" {onclick}>{"药品入库登记"}</button>
+    <OwnTableComponent<DrugInfo> data={(*update_info).clone()} columns={columns} />
+    { if *visible {
+        html!{
+           <OwnModalComponent
+                name={"药品名称".to_string()}
+                save={on_save.clone()}
+                cancel={on_cancel.clone()}
+            >
+            <div class="columns is-2">
+                    <div class="column">
+                        <input class="input" type="text" required={true} name="name" id="name" placeholder="药品名称"
+                        value={add_info.name.clone()}  oninput={oninput_name} />
+                    </div>
+                    <div class="column">
+                    <div class="file is-primary">
+                    <label class="file-label">
+                      <input class="file-input" type="file" name="resume" />
+                      <span class="file-cta">
+                        <span class="file-icon">
+                          <i class="fas fa-upload" />
+                        </span>
+                        <span class="file-label">
+                          {"请选择图片"}
+                        </span>
+                      </span>
+                    </label>
+                  </div>
+                    </div>
+                </div>
+            <div class="columns is-2">
+                    <div class="column">
+                        <input class="input" type="text"  name="usage_dosage" id="usage_dosage" placeholder="用法用量"
+                        value={add_info.usage_dosage.clone()}  oninput={oninput_usage_dosage}  />
+                    </div>
+                </div>
                 <div class="columns is-2">
-                        <div class="column">
-                            <input class="input" type="text" required={true} name="name" id="name" placeholder="药品名称"
-                            value={add_info.name.clone()}  oninput={oninput_name} />
-                        </div>
-                        <div class="column">
-                        <div class="file is-primary">
-                        <label class="file-label">
-                          <input class="file-input" type="file" name="resume" />
-                          <span class="file-cta">
-                            <span class="file-icon">
-                              <i class="fas fa-upload" />
-                            </span>
-                            <span class="file-label">
-                              {"请选择图片"}
-                            </span>
-                          </span>
-                        </label>
-                      </div>
-                        </div>
+                    <div class="column">
+                        <input class="input" type="text"  name="matters_need_attention" id="matters_need_attention" placeholder="注意事项"
+                        value={add_info.matters_need_attention.clone()}  oninput={oninput_matters_need_attention}  />
                     </div>
-                <div class="columns is-2">
-                        <div class="column">
-                            <input class="input" type="text"  name="usage_dosage" id="usage_dosage" placeholder="用法用量"
-                            value={add_info.usage_dosage.clone()}  oninput={oninput_usage_dosage}  />
-                        </div>
-                    </div>
-                    <div class="columns is-2">
-                        <div class="column">
-                            <input class="input" type="text"  name="matters_need_attention" id="matters_need_attention" placeholder="注意事项"
-                            value={add_info.matters_need_attention.clone()}  oninput={oninput_matters_need_attention}  />
-                        </div>
-                    </div>
-                </OwnModalComponent>
-            }
-        } else {
-            html!{}
-        }}
-        </div>
-        };
+                </div>
+            </OwnModalComponent>
+        }
+    } else {
+        html!{}
+    }}
+    </div>
+    };
 }

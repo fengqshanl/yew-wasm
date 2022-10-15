@@ -1,8 +1,8 @@
 use crate::ownhttp::myhttp::request;
-use yew::prelude::*;
-use web_sys::HtmlInputElement;
-use yew_hooks::prelude::*;
 use crate::pages::people::table::DrugInfo;
+use web_sys::HtmlInputElement;
+use yew::prelude::*;
+use yew_hooks::prelude::*;
 
 #[function_component(Guest)]
 pub fn guest_component() -> Html {
@@ -23,81 +23,76 @@ pub fn guest_component() -> Html {
         })
     };
 
-    let onclick = {
+    let onclick = { Callback::from(move |_| add_drug.run()) };
+
+    let oninput_name = {
         let update_info = update_info.clone();
-        Callback::from(move |_| {
-            add_drug.run()
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*update_info).clone();
+            info.name = input.value();
+            update_info.set(info);
         })
     };
 
-    let oninput_name = {
-            let update_info = update_info.clone();
-            Callback::from(move |e: InputEvent| {
-                let input: HtmlInputElement = e.target_unchecked_into();
-                let mut info = (*update_info).clone();
-                info.name = input.value();
-                update_info.set(info);
-            })
-    };
-
-//     let oninput_drug_number = {
-//         let update_info = update_info.clone();
-//         Callback::from(move |e: InputEvent| {
-//             let input: HtmlInputElement = e.target_unchecked_into();
-//             let mut info = (*update_info).clone();
-//             info.drug_number = input.value();
-//             update_info.set(info);
-//         })
-// };
-//
-// let oninput_ingredient = {
-//             let update_info = update_info.clone();
-//             Callback::from(move |e: InputEvent| {
-//                 let input: HtmlInputElement = e.target_unchecked_into();
-//                 let mut info = (*update_info).clone();
-//                 info.ingredient = input.value();
-//                 update_info.set(info);
-//             })
-//     };
-//
-//     let oninput_character = {
-//             let update_info = update_info.clone();
-//             Callback::from(move |e: InputEvent| {
-//                 let input: HtmlInputElement = e.target_unchecked_into();
-//                 let mut info = (*update_info).clone();
-//                 info.character = input.value();
-//                 update_info.set(info);
-//             })
-//     };
-//
-//     let oninput_major_function = {
-//             let update_info = update_info.clone();
-//             Callback::from(move |e: InputEvent| {
-//                 let input: HtmlInputElement = e.target_unchecked_into();
-//                 let mut info = (*update_info).clone();
-//                 info.major_function = input.value();
-//                 update_info.set(info);
-//             })
-//     };
-//
-//     let oninput_specification = {
-//             let update_info = update_info.clone();
-//             Callback::from(move |e: InputEvent| {
-//                 let input: HtmlInputElement = e.target_unchecked_into();
-//                 let mut info = (*update_info).clone();
-//                 info.specification = input.value();
-//                 update_info.set(info);
-//             })
-//     };
+    //     let oninput_drug_number = {
+    //         let update_info = update_info.clone();
+    //         Callback::from(move |e: InputEvent| {
+    //             let input: HtmlInputElement = e.target_unchecked_into();
+    //             let mut info = (*update_info).clone();
+    //             info.drug_number = input.value();
+    //             update_info.set(info);
+    //         })
+    // };
+    //
+    // let oninput_ingredient = {
+    //             let update_info = update_info.clone();
+    //             Callback::from(move |e: InputEvent| {
+    //                 let input: HtmlInputElement = e.target_unchecked_into();
+    //                 let mut info = (*update_info).clone();
+    //                 info.ingredient = input.value();
+    //                 update_info.set(info);
+    //             })
+    //     };
+    //
+    //     let oninput_character = {
+    //             let update_info = update_info.clone();
+    //             Callback::from(move |e: InputEvent| {
+    //                 let input: HtmlInputElement = e.target_unchecked_into();
+    //                 let mut info = (*update_info).clone();
+    //                 info.character = input.value();
+    //                 update_info.set(info);
+    //             })
+    //     };
+    //
+    //     let oninput_major_function = {
+    //             let update_info = update_info.clone();
+    //             Callback::from(move |e: InputEvent| {
+    //                 let input: HtmlInputElement = e.target_unchecked_into();
+    //                 let mut info = (*update_info).clone();
+    //                 info.major_function = input.value();
+    //                 update_info.set(info);
+    //             })
+    //     };
+    //
+    //     let oninput_specification = {
+    //             let update_info = update_info.clone();
+    //             Callback::from(move |e: InputEvent| {
+    //                 let input: HtmlInputElement = e.target_unchecked_into();
+    //                 let mut info = (*update_info).clone();
+    //                 info.specification = input.value();
+    //                 update_info.set(info);
+    //             })
+    //     };
 
     let oninput_usage_dosage = {
-            let update_info = update_info.clone();
-            Callback::from(move |e: InputEvent| {
-                let input: HtmlInputElement = e.target_unchecked_into();
-                let mut info = (*update_info).clone();
-                info.usage_dosage = input.value();
-                update_info.set(info);
-            })
+        let update_info = update_info.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*update_info).clone();
+            info.usage_dosage = input.value();
+            update_info.set(info);
+        })
     };
 
     // let oninput_adverse_reaction = {
@@ -121,13 +116,13 @@ pub fn guest_component() -> Html {
     // };
 
     let oninput_matters_need_attention = {
-            let update_info = update_info.clone();
-            Callback::from(move |e: InputEvent| {
-                let input: HtmlInputElement = e.target_unchecked_into();
-                let mut info = (*update_info).clone();
-                info.matters_need_attention = input.value();
-                update_info.set(info);
-            })
+        let update_info = update_info.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*update_info).clone();
+            info.matters_need_attention = input.value();
+            update_info.set(info);
+        })
     };
 
     // let oninput_store_up = {
@@ -239,7 +234,7 @@ pub fn guest_component() -> Html {
                     // </div>
                     <div class="columns is-2">
                         <div class="column">
-                            <input class="input" type="text"  name="usage_dosage" id="usage_dosage" placeholder="用法用量" 
+                            <input class="input" type="text"  name="usage_dosage" id="usage_dosage" placeholder="用法用量"
                             value={update_info.usage_dosage.clone()}  oninput={oninput_usage_dosage}  />
                         </div>
                     </div>
@@ -257,7 +252,7 @@ pub fn guest_component() -> Html {
                     // </div>
                     <div class="columns is-2">
                         <div class="column">
-                            <input class="input" type="text"  name="matters_need_attention" id="matters_need_attention" placeholder="注意事项" 
+                            <input class="input" type="text"  name="matters_need_attention" id="matters_need_attention" placeholder="注意事项"
                             value={update_info.matters_need_attention.clone()}  oninput={oninput_matters_need_attention}  />
                         </div>
                     </div>

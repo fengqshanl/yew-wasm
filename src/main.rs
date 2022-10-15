@@ -1,28 +1,23 @@
-extern crate yew;
 extern crate validator_derive;
+extern crate yew;
 
 use route::{switch, Route};
-use yew::html::Scope;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
+mod components;
 mod dropdown;
 mod error;
 mod ownhttp;
 mod pages;
 mod route;
-mod components;
 
 struct Msg {}
 
-struct Model {
-    value: i64,
-    persons: Vec<String>,
-    drop_list: Vec<String>,
-}
+struct Model {}
 
 impl Model {
-    fn button_view(&self, link: &Scope<Self>) -> Html {
+    fn button_view(&self) -> Html {
         html! {
                     <aside class="menu">
           <p class="menu-label">
@@ -32,11 +27,6 @@ impl Model {
             <li>
                 <Link<Route> classes={"is-ghost"} to={Route::People}>
                     {"库存清单"}
-                </Link<Route>>
-            </li>
-            <li>
-                <Link<Route> classes={"is-ghost"} to={Route::Guest}>
-                    {"药品入库"}
                 </Link<Route>>
             </li>
             <li>
@@ -58,25 +48,6 @@ impl Model {
         </aside>
                 }
     }
-    fn login_view(&self, link: &Scope<Self>) -> Html {
-        html! {
-            <div class="top-info">
-                <div>
-                    {"name"}
-                </div>
-                <div>
-                    {"profile photo"}
-                </div>
-            </div>
-        }
-    }
-    fn logo_view(&self, link: &Scope<Self>) -> Html {
-        html! {
-            <div class="top-logo">
-                {"logo"}
-            </div>
-        }
-    }
 }
 
 impl Component for Model {
@@ -84,11 +55,7 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self {
-            value: 0,
-            persons: Vec::with_capacity(5),
-            drop_list: Vec::with_capacity(5),
-        }
+        Self {}
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -97,15 +64,13 @@ impl Component for Model {
         }
     }
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        // This gives us a component's "`Scope`" which allows us to send messages, etc to the component.
-        let link = ctx.link();
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         html! {
             <BrowserRouter>
                 <div class="layout">
                     <div class="content">
                             <div class="content-left">
-                                {self.button_view(link)}
+                                {self.button_view()}
                             </div>
                             <div class="content-right">
                                 <Switch<Route> render={Switch::render(switch)} />
@@ -116,13 +81,13 @@ impl Component for Model {
         }
     }
 
-    fn changed(&mut self, ctx: &Context<Self>) -> bool {
+    fn changed(&mut self, _ctx: &Context<Self>) -> bool {
         true
     }
 
-    fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {}
+    fn rendered(&mut self, _ctx: &Context<Self>, _first_render: bool) {}
 
-    fn destroy(&mut self, ctx: &Context<Self>) {}
+    fn destroy(&mut self, _ctx: &Context<Self>) {}
 }
 
 fn main() {
