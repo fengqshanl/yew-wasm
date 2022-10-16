@@ -176,13 +176,12 @@ pub fn drug_table() -> Html {
                     <div class="column">
                     <div class="file is-primary">
                     <label class="file-label">
-                      <input class="file-input" type="file" name="resume" />
                       <span class="file-cta">
                         <span class="file-icon">
                           <i class="fas fa-upload" />
                         </span>
                         <span class="file-label">
-                          {"请选择图片"}
+                          {"扫码入库"}
                         </span>
                       </span>
                     </label>
@@ -191,13 +190,13 @@ pub fn drug_table() -> Html {
                 </div>
             <div class="columns is-2">
                     <div class="column">
-                        <input class="input" type="text"  name="usage_dosage" id="usage_dosage" placeholder="用法用量"
+                        <input class="input" type="number"  name="usage_dosage" id="usage_dosage" placeholder="入库数量"
                         value={add_info.usage_dosage.clone()}  oninput={oninput_usage_dosage}  />
                     </div>
                 </div>
                 <div class="columns is-2">
                     <div class="column">
-                        <input class="input" type="text"  name="matters_need_attention" id="matters_need_attention" placeholder="注意事项"
+                        <input class="input" type="text"  name="matters_need_attention" id="matters_need_attention" placeholder="入库价格"
                         value={add_info.matters_need_attention.clone()}  oninput={oninput_matters_need_attention}  />
                     </div>
                 </div>
