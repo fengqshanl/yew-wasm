@@ -19,35 +19,39 @@ struct Model {}
 impl Model {
     fn button_view(&self) -> Html {
         html! {
-                      <aside class="menu">
-            <p class="menu-label">
-              {"药品出入库"}
-            </p>
-            <ul class="menu-list">
-            <li>
-            <Link<Route> classes={"is-ghost"} to={Route::Drug}>
-            {"药品出库"}
-            </Link<Route>>
-        </li>
-              <li>
-                  <Link<Route> classes={"is-ghost"} to={Route::People}>
-                      {"库存清单"}
-                  </Link<Route>>
-              </li>
-
-              <li>
-                  <Link<Route> classes={"is-ghost"} to={Route::Case}>
-                      {"出入库记录"}
-                  </Link<Route>>
-              </li>
-              <li>
-                  <Link<Route> classes={"is-ghost"} to={Route::Setting}>
-                      {"流水"}
-                  </Link<Route>>
-              </li>
-            </ul>
-          </aside>
-                  }
+            <aside class="menu">
+                <p class="menu-label">
+                    {"药品出入库"}
+                </p>
+                <ul class="menu-list">
+                    <li>
+                        <Link<Route> classes={"is-ghost"} to={Route::Drug}>
+                            {"首页"}
+                        </Link<Route>>
+                    </li>
+                    <li>
+                        <Link<Route> classes={"is-ghost"} to={Route::Drug}>
+                            {"药品出库"}
+                        </Link<Route>>
+                    </li>
+                    <li>
+                        <Link<Route> classes={"is-ghost"} to={Route::People}>
+                            {"库存清单"}
+                        </Link<Route>>
+                    </li>
+                    <li>
+                        <Link<Route> classes={"is-ghost"} to={Route::Case}>
+                            {"出入库记录"}
+                        </Link<Route>>
+                    </li>
+                    <li>
+                        <Link<Route> classes={"is-ghost"} to={Route::Setting}>
+                            {"流水"}
+                        </Link<Route>>
+                    </li>
+                </ul>
+            </aside>
+        }
     }
 }
 

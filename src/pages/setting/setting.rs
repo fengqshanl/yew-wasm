@@ -32,7 +32,7 @@ pub fn setting() -> Html {
         },
     ];
     html! {
-        <div class="case-components">
+        <div class="setting-components">
             <div class="select">
                 <select>
                     <option>
