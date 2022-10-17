@@ -1,25 +1,18 @@
 use crate::ownhttp::myhttp::request;
-use crate::pages::people::table::DrugInfo;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 
+use super::people::table::PeopleData;
+
 #[function_component(Guest)]
 pub fn guest_component() -> Html {
-    let update_info = use_state(DrugInfo::default);
-    //
-    // let on_reset =  {
-    //     println!("reset reset reset");
-    //     Callback::from(move |_| {
-    //
-    //     })
-    // };
-
+    let update_info = use_state(PeopleData::default);
     let add_drug = {
         let up = update_info.clone();
         use_async(async move {
             log::info!("request");
-            request::<DrugInfo, ()>(reqwest::Method::POST, "/drug".to_string(), (*up).clone()).await
+            request::<PeopleData, ()>(reqwest::Method::POST, "/drug".to_string(), (*up).clone()).await
         })
     };
 

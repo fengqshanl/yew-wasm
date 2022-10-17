@@ -1,5 +1,5 @@
 use pages::{
-    case::case::Case, drug::Drug, home::index::Home, page_not_found::PageNotFound,
+    case::case::Case, drug::drug::Drug, home::index::Home, page_not_found::PageNotFound,
     people::index::People, setting::setting::Setting,
 };
 use yew::{html, Html};

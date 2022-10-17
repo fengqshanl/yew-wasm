@@ -1,5 +1,5 @@
 use crate::components::modal::OwnModalComponent;
-use crate::components::table::{ColumnPropType, OwnTableComponent};
+use crate::components::table::{OwnTableComponent, ColumnTrait};
 use crate::ownhttp::myhttp::request;
 use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
@@ -7,63 +7,77 @@ use yew::prelude::*;
 use yew::Callback;
 use yew::{html, Properties};
 use yew_hooks::{use_async, use_effect_once};
-
 #[derive(Clone, Debug, Eq, PartialEq, Properties, Default, Deserialize, Serialize)]
-pub struct DrugInfo {
+pub struct PeopleData {
     pub drug_id: String,
     pub drug_number: i64,
     pub class_id: String,
     pub name: String,
-    // pub adverse_reaction: String,
-    // pub character: String,
-    // pub approval_number: String,
-    // pub expiry_date: i64,
-    // pub ingredient: String,
-    // pub major_function: String,
-    // pub manufacturing_enterprise: String,
     pub matters_need_attention: String,
-    // pub produced_time: String,
-    // pub specification: String,
-    // pub store_up: String,
-    // pub taboo: String,
     pub usage_dosage: String,
     pub a_b_classify: String,
 }
 
+#[derive(Clone, PartialEq, Debug)]
+pub struct PeopleColumn {
+    title: String,
+    data_index: String
+}
+
+impl ColumnTrait<PeopleData> for PeopleColumn {
+    fn render(&self, value: String, record: &PeopleData, index: usize) -> Html {
+        match &value as &str {
+            "index" => return html!{{index}},
+            "drug_name" => return html!{{&record.name}},
+            "drug_kind" => return html!{{&record.a_b_classify}},
+            "usage_dosage" => return html!{{&record.usage_dosage}}, 
+            "matters_need_attention" => return html!{{&record.matters_need_attention}},
+            "drug_price" => return html!{{"价格"}},
+            "inventory" => return html!{{"库存"}},
+            "shelf_life" => return html!{{"保质期"}},
+            _ => html!{}
+        }
+    }
+    fn title(&self) -> String{
+        self.title.clone()
+    }
+}
+
+
 #[function_component(DrugTable)]
 pub fn drug_table() -> Html {
-    let update_info: UseStateHandle<Vec<DrugInfo>> = use_state(Vec::default);
-    let add_info: UseStateHandle<DrugInfo> = use_state(DrugInfo::default);
-    let columns: Vec<ColumnPropType> = vec![
-        ColumnPropType {
+    let update_info: UseStateHandle<Vec<PeopleData>> = use_state(Vec::default);
+    let add_info: UseStateHandle<PeopleData> = use_state(PeopleData::default);
+    let columns = vec![
+        PeopleColumn {
             title: "序号".to_string(),
             data_index: "index".to_string(),
         },
-        ColumnPropType {
+        PeopleColumn {
             title: "药品名称".to_string(),
             data_index: "drug_name".to_string(),
         },
-        ColumnPropType {
+        PeopleColumn {
             title: "分类".to_string(),
             data_index: "drug_kind".to_string(),
         },
-        ColumnPropType {
+        PeopleColumn {
             title: "用法用量".to_string(),
             data_index: "usage_dosage".to_string(),
         },
-        ColumnPropType {
+        PeopleColumn {
             title: "注意事项".to_string(),
             data_index: "matters_need_attention".to_string(),
         },
-        ColumnPropType {
+        PeopleColumn {
             title: "价格".to_string(),
             data_index: "drug_price".to_string(),
         },
-        ColumnPropType {
+        PeopleColumn {
             title: "库存".to_string(),
             data_index: "inventory".to_string(),
         },
-        ColumnPropType {
+        PeopleColumn {
             title: "保质期".to_string(),
             data_index: "shelf_life".to_string(),
         },
@@ -71,7 +85,7 @@ pub fn drug_table() -> Html {
     let visible: UseStateHandle<bool> = use_state(bool::default);
     let drug_info = use_async(async move {
         log::info!("request in");
-        request::<(), Vec<DrugInfo>>(reqwest::Method::GET, "/drug".to_string(), ()).await
+        request::<(), Vec<PeopleData>>(reqwest::Method::GET, "/drug".to_string(), ()).await
     });
 
     let onclick = {
@@ -137,7 +151,7 @@ pub fn drug_table() -> Html {
                     update_info.set(
                         drug_info
                             .iter()
-                            .map(move |drug_info| DrugInfo {
+                            .map(move |drug_info| PeopleData {
                                 drug_id: drug_info.drug_id.to_string(),
                                 class_id: drug_info.class_id.to_string(),
                                 name: drug_info.name.to_string(),
@@ -162,7 +176,7 @@ pub fn drug_table() -> Html {
             <button class="button is-link drug-in-out-button" {onclick}>
                 {"药品入库登记"}
             </button>
-            <OwnTableComponent<DrugInfo> data={(*update_info).clone()} columns={columns} />
+            <OwnTableComponent<PeopleData, PeopleColumn> data={(*update_info).clone()} columns={columns} />
             { if *visible {
                 html!{
                     <OwnModalComponent

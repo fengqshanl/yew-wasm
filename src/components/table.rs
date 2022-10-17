@@ -1,30 +1,22 @@
-use std::fmt::{Debug, Display};
+use std::fmt::{Debug};
 
 use yew::prelude::*;
 
 #[derive(Properties, Clone, PartialEq, Debug)]
-pub struct TableProps<D: Properties + Clone + PartialEq + Debug> {
+pub struct TableProps<D: Properties + Clone + PartialEq + Debug, C: Clone + PartialEq + Debug + ColumnTrait<D>> {
     #[prop_or_default]
     pub data: Vec<D>,
-    pub columns: Vec<ColumnPropType>,
+    pub columns: Vec<C>,
 }
-
-#[derive(Clone, PartialEq, Debug)]
-pub struct ColumnPropType {
-    pub title: String,
-    pub data_index: String,
-}
-
-impl ColumnPropType {
-    fn render<V: Display, R>(&self, value: V, _record: R, _index: usize) -> Html {
-        html! {{value}}
-    }
+pub trait ColumnTrait<R> {
+    fn render(&self, value: String, record: &R, index: usize) -> Html;
+    fn title(&self) -> String;
 }
 
 #[function_component(OwnTableComponent)]
-pub fn table<D>(props: &TableProps<D>) -> Html
+pub fn table<D,C>(props: &TableProps<D,C>) -> Html
 where
-    D: Properties + Clone + PartialEq + Debug + Default + 'static,
+    D: Properties + Clone + PartialEq + Debug + Default + 'static,C: Clone + PartialEq + Debug + ColumnTrait<D> + 'static
 {
     let data_list: UseStateHandle<Vec<Html>> = use_state(Vec::default);
 
@@ -35,14 +27,14 @@ where
         use_effect_with_deps(
             move |data_info| {
                 for (index, row) in data_info.clone().iter().enumerate() {
-                    for col in columns.clone().iter() {
+                    for col in columns.clone().iter(){
                         let html = html! {
-                          <th>{col.clone().render(col.clone().data_index, row, index)}</th>
-                        };
-                        let mut data_li = (*data_list).clone();
-                        data_li.push(html);
-                        data_list.set(data_li);
-                    }
+                            <th>{col.clone().render(col.clone().title(), row, index)}</th>
+                          };
+                          let mut data_li = (*data_list).clone();
+                          data_li.push(html);
+                          data_list.set(data_li);
+                    };
                 }
                 || ()
             },
@@ -54,12 +46,13 @@ where
               <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                   <thead>
                       <tr>
-              {
-                  for props.columns.clone().iter().map(|c| {
-                      html! {
-                          <th class="table-header-col">{c.clone().title}</th>
-                      }
-              })}
+                {
+                  for props.columns.clone().iter().map(|c|{
+                    html! {
+                        <th class="table-header-col">{c.clone().title()}</th>
+                    }
+                  })
+                }
           </tr>
         </thead>
         <tbody>
