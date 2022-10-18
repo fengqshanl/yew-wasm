@@ -25,7 +25,7 @@ impl Model {
                 </p>
                 <ul class="menu-list">
                     <li>
-                        <Link<Route> classes={"is-ghost"} to={Route::Drug}>
+                        <Link<Route> classes={"is-ghost"} to={Route::Home}>
                             {"首页"}
                         </Link<Route>>
                     </li>

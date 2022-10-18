@@ -20,16 +20,20 @@ pub struct DrugColumn {
 
 impl ColumnTrait<DrugData> for DrugColumn {
     fn render(&self, value: String, record: &DrugData, index: usize) -> Html {
+        log::info!("{:?} - own - render - {:?}", value, record);
         match &value as &str {
             "index" => return html!{{index}},
-            "name" => return html!{{&record.name}},
-            "kind" => return html!{{&record.number}},
-            "out_time" => return html!{{&record.money}},
+            "name" => return html!{<input class="input" type="text" name="name" id="name" placeholder="药品名称" />},
+            "number" => return html!{<input class="input" type="text" name="number" id="number" placeholder="药品数量" />},
+            "money" => return html!{<input class="input" type="text" name="money" id="money" placeholder="金额" />},
             _ => html!{}
         }
     }
     fn title(&self) -> String{
         self.title.clone()
+    }
+    fn data_index(&self) -> String{
+        self.data_index.clone()
     }
 }
 
@@ -72,7 +76,14 @@ pub fn drug() -> Html {
     html! {
         <div class="setting-components">
             <button class="button is-link drug-in-out-button" >{"扫码识别"}</button>
-            <OwnTableComponent<DrugData, DrugColumn> data={(*case_info).clone()} columns={columns} />
+            <OwnTableComponent<DrugData, DrugColumn> data={vec![
+                DrugData{
+                    index: 1,
+                    name: "name".to_string(),
+                    number: "number".to_string(),
+                    money: "money".to_string(),
+                }
+            ]} columns={columns} />
         </div>
     }
 }

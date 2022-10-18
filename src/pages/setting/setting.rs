@@ -27,6 +27,9 @@ impl ColumnTrait<SetData> for SetColumn {
     fn title(&self) -> String{
         self.title.clone()
     }
+    fn data_index(&self) -> String {
+        self.data_index.clone()
+    }
 }
 
 #[function_component(Setting)]

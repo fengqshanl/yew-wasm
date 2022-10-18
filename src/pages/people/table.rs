@@ -41,6 +41,9 @@ impl ColumnTrait<PeopleData> for PeopleColumn {
     fn title(&self) -> String{
         self.title.clone()
     }
+    fn data_index(&self) -> String {
+        self.data_index.clone()
+    }
 }
 
 

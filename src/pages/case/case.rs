@@ -18,7 +18,7 @@ pub struct CaseColumn {
 impl ColumnTrait<CaseData> for CaseColumn {
     fn render(&self, value: String, record: &CaseData, index: usize) -> Html {
         match &value as &str {
-            "index" => return html!{{index}},
+            "index" => return html!{{index + 1}},
             "name" => return html!{{&record.name}},
             "kind" => return html!{{&record.kind}},
             "out_time" => return html!{{&record.out_time}},
@@ -27,6 +27,9 @@ impl ColumnTrait<CaseData> for CaseColumn {
     }
     fn title(&self) -> String{
         self.title.clone()
+    }
+    fn data_index(&self) -> String {
+        self.data_index.clone()
     }
 }
 
