@@ -1,10 +1,13 @@
+use crate::components::message::message;
 use crate::components::table::{ColumnTrait, OwnTableComponent};
+use crate::ownhttp::myhttp::request;
 use gloo::console::debug;
+use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew::{html, Properties};
-use yew_hooks::use_effect_once;
+use yew_hooks::{use_async, use_effect_once};
 
-#[derive(Clone, Debug, PartialEq, Properties, Default)]
+#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
 pub struct DrugData {
     pub index: usize,
     pub name: String,
@@ -20,7 +23,6 @@ pub struct DrugColumn {
 
 impl ColumnTrait<DrugData> for DrugColumn {
     fn render(&self, value: String, record: &DrugData, index: usize) -> Html {
-        log::info!("{:?} - own - render - {:?}", value, record);
         match &value as &str {
             "index" => return html! {{index + 1}},
             "name" => {
@@ -64,6 +66,17 @@ pub fn drug() -> Html {
             data_index: "money".to_string(),
         },
     ];
+    let drug_info = use_async(async move {
+        request::<(), Vec<DrugData>>(reqwest::Method::GET, "/sale".to_string(), ()).await
+    });
+    {
+        let drug_info = drug_info.clone();
+        use_effect_once(move || {
+            drug_info.run();
+
+            || message("获取销售列表错误".to_string())
+        });
+    }
     {
         let case_info = case_info.clone();
         use_effect_once(move || {
@@ -80,14 +93,7 @@ pub fn drug() -> Html {
     html! {
         <div class="setting-components">
             <button class="button is-link drug-in-out-button" >{"扫码识别"}</button>
-            <OwnTableComponent<DrugData, DrugColumn> data={vec![
-                DrugData{
-                    index: 1,
-                    name: "name".to_string(),
-                    number: "number".to_string(),
-                    money: "money".to_string(),
-                }
-            ]} columns={columns} />
+            <OwnTableComponent<DrugData, DrugColumn> data={(*case_info).clone()} columns={columns} />
         </div>
     }
 }
