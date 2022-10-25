@@ -91,8 +91,11 @@ pub fn drug() -> Html {
         });
     }
     html! {
-        <div class="setting-components">
-            <button class="button is-link drug-in-out-button" >{"扫码识别"}</button>
+        <div class="drug-components"> 
+            <div class="drug-buttons">
+                <button class="button is-link drug-in-out-button" >{"扫码识别"}</button>
+                <button class="button is-link drug-in-out-button" >{"添加"}</button>
+            </div>
             <OwnTableComponent<DrugData, DrugColumn> data={(*case_info).clone()} columns={columns} />
         </div>
     }

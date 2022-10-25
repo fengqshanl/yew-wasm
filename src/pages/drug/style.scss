@@ -1,0 +1,11 @@
+.drug-components{
+    .drug-buttons{
+        display:flex;
+        flex-direction: row;
+        margin:1em 0 1em 0;
+        justify-content: end;
+        .drug-in-out-button{
+            margin:0 0 0 1em;
+        }
+    }
+}
