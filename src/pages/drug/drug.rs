@@ -1,49 +1,12 @@
 use crate::components::message::message;
-use crate::components::table::{ColumnTrait, OwnTableComponent};
+use crate::components::table::{OwnTableComponent};
 use crate::ownhttp::myhttp::request;
 use gloo::console::debug;
-use serde::{Deserialize, Serialize};
 use yew::prelude::*;
-use yew::{html, Properties};
+use yew::{html};
 use yew_hooks::{use_async, use_effect_once};
 
-#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
-pub struct DrugData {
-    pub index: usize,
-    pub name: String,
-    pub number: String,
-    pub money: String,
-}
-
-#[derive(Clone, PartialEq, Debug)]
-pub struct DrugColumn {
-    title: String,
-    data_index: String,
-}
-
-impl ColumnTrait<DrugData> for DrugColumn {
-    fn render(&self, value: String, record: &DrugData, index: usize) -> Html {
-        match &value as &str {
-            "index" => return html! {{index + 1}},
-            "name" => {
-                return html! {<input class="input" type="text" name="name" id="name" placeholder="药品名称" />}
-            }
-            "number" => {
-                return html! {<input class="input" type="text" name="number" id="number" placeholder="药品数量" />}
-            }
-            "money" => {
-                return html! {<input class="input" type="text" name="money" id="money" placeholder="金额" />}
-            }
-            _ => html! {},
-        }
-    }
-    fn title(&self) -> String {
-        self.title.clone()
-    }
-    fn data_index(&self) -> String {
-        self.data_index.clone()
-    }
-}
+use super::model::{DrugColumn, DrugData};
 
 #[function_component(Drug)]
 pub fn drug() -> Html {
