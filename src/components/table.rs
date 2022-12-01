@@ -10,6 +10,7 @@ pub struct TableProps<
     #[prop_or_default]
     pub data: Vec<D>,
     pub columns: Vec<C>,
+    pub pagination: bool,
 }
 pub trait ColumnTrait<R> {
     fn render(&self, value: String, record: &R, index: usize) -> Html;
@@ -70,19 +71,25 @@ where
                     }
                 </tbody>
             </table>
-            <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-                <a class="pagination-previous">{"上一页"}</a>
-                <a class="pagination-next">{"下一页"}</a>
-                <ul class="pagination-list">
-                    <li><a class="pagination-link" aria-label="Goto page 1">{"1"}</a></li>
-                    <li><span class="pagination-ellipsis">{"……"}</span></li>
-                    <li><a class="pagination-link" aria-label="Goto page 45">{"45"}</a></li>
-                    <li><a class="pagination-link is-current" aria-label="Page 46" aria-current="page">{"46"}</a></li>
-                    <li><a class="pagination-link" aria-label="Goto page 47">{"47"}</a></li>
-                    <li><span class="pagination-ellipsis">{"……"}</span></li>
-                    <li><a class="pagination-link" aria-label="Goto page 86">{"86"}</a></li>
-                </ul>
-            </nav>
+            { if props.pagination.clone() {
+                html!{
+                    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                        <a class="pagination-previous">{"上一页"}</a>
+                        <a class="pagination-next">{"下一页"}</a>
+                        <ul class="pagination-list">
+                            <li><a class="pagination-link" aria-label="Goto page 1">{"1"}</a></li>
+                            <li><span class="pagination-ellipsis">{"……"}</span></li>
+                            <li><a class="pagination-link" aria-label="Goto page 45">{"45"}</a></li>
+                            <li><a class="pagination-link is-current" aria-label="Page 46" aria-current="page">{"46"}</a></li>
+                            <li><a class="pagination-link" aria-label="Goto page 47">{"47"}</a></li>
+                            <li><span class="pagination-ellipsis">{"……"}</span></li>
+                            <li><a class="pagination-link" aria-label="Goto page 86">{"86"}</a></li>
+                        </ul>
+                    </nav>
+                }
+            } else {
+                html!{ }
+            } }
         </div>
       }
 }

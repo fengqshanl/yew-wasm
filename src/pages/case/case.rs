@@ -57,7 +57,7 @@ pub fn case() -> Html {
     html! {
         <div class="case-components">
             <button class="button is-link drug-in-out-button" >{"扫码识别"}</button>
-            <OwnTableComponent<CaseData,CaseColumn> data={(*case_info).clone()} columns={columns} />
+            <OwnTableComponent<CaseData,CaseColumn> data={(*case_info).clone()} columns={columns} pagination={false} />
         </div>
     }
 }

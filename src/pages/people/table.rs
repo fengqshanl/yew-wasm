@@ -179,7 +179,7 @@ pub fn drug_table() -> Html {
             <button class="button is-link drug-in-out-button" {onclick}>
                 {"药品入库登记"}
             </button>
-            <OwnTableComponent<PeopleData, PeopleColumn> data={(*update_info).clone()} columns={columns} />
+            <OwnTableComponent<PeopleData, PeopleColumn> data={(*update_info).clone()} columns={columns} pagination={true} />
             { if *visible {
                 html!{
                     <OwnModalComponent

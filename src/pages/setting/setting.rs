@@ -77,7 +77,7 @@ pub fn setting() -> Html {
                 </select>
             </div>
             <button class="button is-link drug-in-out-button" >{"扫码识别"}</button>
-            <OwnTableComponent<SetData, SetColumn> data={(*case_info).clone()} columns={columns} />
+            <OwnTableComponent<SetData, SetColumn> data={(*case_info).clone()} columns={columns} pagination={true} />
         </div>
     }
 }
