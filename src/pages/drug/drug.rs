@@ -4,7 +4,7 @@ use crate::components::table::{ColumnTrait, OwnTableComponent};
 use gloo::console::debug;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
-use yew::{html, Properties};
+use yew::{html};
 use yew_hooks::{use_async, use_effect_once};
 
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize, Copy)]
