@@ -73,11 +73,11 @@ impl Component for Model {
         html! {
             <BrowserRouter>
                 <div class="layout">
-                    <div class="content">
-                            <div class="content-left">
+                    <div class="system-content">
+                            <div class="system-content-left">
                                 {self.button_view()}
                             </div>
-                            <div class="content-right">
+                            <div class="system-content-right">
                                 <Switch<Route> render={Switch::render(switch)} />
                             </div>
                     </div>

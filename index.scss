@@ -14,6 +14,26 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  .system-content{
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  &-left{
+    background-color: rgb(154,180,205);
+    color: white;
+    font-weight: 600;
+    font-size: 22px;
+    width: 20vw;
+    display: flex;
+  }
+  &-right{
+    justify-content: center;
+    background-color: #e0eee8;
+    padding: 2em;
+    width: 80vw;
+    display: flex;
+  }
+}
 }
 .top{
   display: flex;
@@ -59,26 +79,7 @@
   }
 }
 
-.content{
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  &-left{
-    background-color: rgb(154,180,205);
-    color: white;
-    font-weight: 600;
-    font-size: 22px;
-    width: 20vw;
-    display: flex;
-  }
-  &-right{
-    justify-content: center;
-    background-color: #e0eee8;
-    padding: 2em;
-    width: 80vw;
-    display: flex;
-  }
-}
+
 
 .card{
   width: 50%;

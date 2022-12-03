@@ -7,12 +7,12 @@ use yew::prelude::*;
 use yew::{html};
 use yew_hooks::{use_async, use_effect_once};
 
-#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize, Copy)]
+#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
 pub struct DrugData {
     pub index: usize,
-    pub name: &'static str,
-    pub number: &'static str,
-    pub money: &'static str,
+    pub name: String,
+    pub number: String,
+    pub money: String,
 }
 
 #[derive(Clone, PartialEq, Debug)]
@@ -72,7 +72,8 @@ pub fn drug() -> Html {
     // {
     //     let drug_info = drug_info.clone();
     //     use_effect_once(move || {
-    //         drug_info.run();
+    //         // 查询今日的销售情况
+    //         // drug_info.run();
 
     //         || message("获取销售列表错误".to_string())
     //     });
@@ -80,12 +81,12 @@ pub fn drug() -> Html {
     {
         let case_info = case_info.clone();
         use_effect_once(move || {
-            let case_arr = [DrugData {
+            let case_arr = vec!(DrugData {
                 index: 1,
-                name: "name",
-                number: "number",
-                money: "money",
-            }; 20];
+                name: "name".to_string(),
+                number: "number".to_string(),
+                money: "money".to_string(),
+            });
             println!("arr list: {:?}",case_arr);
             case_info.set(case_arr.to_vec());
             || debug!("Running clean-up of effect on unmount")
@@ -93,11 +94,63 @@ pub fn drug() -> Html {
     }
     html! {
         <div class="drug-components"> 
-            <div class="drug-buttons">
-                <button class="button is-link drug-in-out-button" >{"扫码识别"}</button>
-                <button class="button is-link drug-in-out-button" >{"添加"}</button>
+            <div class="drug-components-top">
+                <div class="drug-buttons">
+                    {"搜索往期销售情况"}
+                    <input type="date" />
+                    <button class="button is-link drug-in-out-button" >{"扫码识别"}</button>
+                    <button class="button is-link drug-in-out-button" >{"添加"}</button>
+                </div>
+                <OwnTableComponent<DrugData, DrugColumn> data={(*case_info).clone()} columns={columns} pagination={false} />
             </div>
-            <OwnTableComponent<DrugData, DrugColumn> data={(*case_info).clone()} columns={columns} pagination={false} />
+            <div class="card drug-card-bottom">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                                {"单笔药品清单"}
+                            </p>
+                            <button class="button is-info is-outlined">
+                                {"保存此笔交易"}
+                            </button>
+                        </header>
+                        <div class="card-content">
+                            <div class="content drug-card-content">
+                                <div class="columns">
+                                    <div class="column drug-content-left">{"本次交易列表"}</div>
+                                    <div class="column is-three-quarters">
+                                        <div class="field">
+                                            <label class="label">{"药品名称"}</label>
+                                            <div class="control">
+                                                <input class="input" type="text" placeholder="药品名称" />
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <label class="label">{"药品数量"}</label>
+                                            <div class="control">
+                                                <input class="input" type="number" placeholder="药品数量"/>
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <label class="label">{"药品单价"}</label>
+                                            <div class="control">
+                                                <input class="input" type="number" placeholder="药品单价"/>
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <label class="label">{"药品总价"}</label>
+                                            <div class="control">
+                                                <input class="input" type="number" placeholder="药品总价"/>
+                                            </div>
+                                        </div>
+                                        <div class="field is-grouped">
+                                            <div class="control">
+                                                <button class="button is-link">{"添加药品"}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            </div>
         </div>
     }
 }
