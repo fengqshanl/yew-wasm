@@ -1,10 +1,9 @@
-// use crate::components::message::message;
 use crate::components::table::{ColumnTrait, OwnTableComponent};
-// use crate::ownhttp::myhttp::request;
-use gloo::console::debug;
+use gloo::console::{debug, info};
+use js_sys::Object;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
-use yew::{html};
+use yew::{function_component, html};
 use yew_hooks::{use_async, use_effect_once};
 
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
@@ -13,6 +12,12 @@ pub struct DrugData {
     pub name: String,
     pub number: String,
     pub money: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
+pub struct Tip {
+    pub name: String,
+    pub money: usize,
 }
 
 #[derive(Clone, PartialEq, Debug)]
@@ -48,6 +53,7 @@ impl ColumnTrait<DrugData> for DrugColumn {
 #[function_component(Drug)]
 pub fn drug() -> Html {
     let case_info: UseStateHandle<Vec<DrugData>> = use_state(Vec::default);
+    let tip_list: UseStateHandle<Vec<Tip>> = use_state(Vec::default);
     let columns = vec![
         DrugColumn {
             title: "序号".to_string(),
@@ -78,6 +84,20 @@ pub fn drug() -> Html {
     //         || message("获取销售列表错误".to_string())
     //     });
     // }
+
+    let save_one_tip = {
+        let tip_list = tip_list.clone();
+        Callback::from(move |_| {
+            let one_tip = Tip{
+                name: "test".to_string(),
+                money: 14
+            };
+            let mut tips = (*tip_list).clone();
+            tips.push(one_tip);
+            tip_list.set(tips.to_vec());
+        })
+    };
+
     {
         let case_info = case_info.clone();
         use_effect_once(move || {
@@ -87,11 +107,14 @@ pub fn drug() -> Html {
                 number: "number".to_string(),
                 money: "money".to_string(),
             });
-            println!("arr list: {:?}",case_arr);
             case_info.set(case_arr.to_vec());
             || debug!("Running clean-up of effect on unmount")
         });
     }
+    let submit = Callback::from(|e: FocusEvent| {
+        log::info!("{:?}",Object::try_from(&e.target().expect("null").value_of()));
+        e.prevent_default();
+    });
     html! {
         <div class="drug-components"> 
             <div class="drug-components-top">
@@ -115,8 +138,21 @@ pub fn drug() -> Html {
                         <div class="card-content">
                             <div class="content drug-card-content">
                                 <div class="columns">
-                                    <div class="column drug-content-left">{"本次交易列表"}</div>
+                                    <div class="column drug-content-left">
+                                        {"本次交易列表"}
+                                        {
+                                            for tip_list.clone().iter().map(|c|{
+                                                html!{
+                                                    <div>
+                                                        {c.name.clone()}
+                                                        {c.money.clone()}
+                                                    </div>
+                                                }
+                                            })
+                                        }
+                                    </div>
                                     <div class="column is-three-quarters">
+                                        <form onsubmit={submit}>
                                         <div class="field">
                                             <label class="label">{"药品名称"}</label>
                                             <div class="control">
@@ -143,9 +179,10 @@ pub fn drug() -> Html {
                                         </div>
                                         <div class="field is-grouped">
                                             <div class="control">
-                                                <button class="button is-link">{"添加药品"}</button>
+                                                <button onclick={save_one_tip} class="button is-link">{"添加小计"}</button>
                                             </div>
                                         </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

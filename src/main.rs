@@ -1,5 +1,6 @@
-extern crate validator_derive;
+#[macro_use]
 extern crate yew;
+extern crate validator_derive;
 
 use route::{switch, Route};
 use yew::prelude::*;
