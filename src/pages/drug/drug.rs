@@ -1,6 +1,7 @@
 use crate::components::table::{ColumnTrait, OwnTableComponent};
 use gloo::console::{debug, info};
 use js_sys::Object;
+use std::ops::Deref;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew::{function_component, html};
@@ -112,7 +113,7 @@ pub fn drug() -> Html {
         });
     }
     let submit = Callback::from(|e: FocusEvent| {
-        log::info!("{:?}",Object::try_from(&e.target().expect("null").value_of()));
+        log::info!("{:?}",&e.target().expect("null").value_of().deref());
         e.prevent_default();
     });
     html! {
