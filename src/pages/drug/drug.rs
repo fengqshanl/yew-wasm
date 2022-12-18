@@ -113,7 +113,7 @@ pub fn drug() -> Html {
         });
     }
     let submit = Callback::from(|e: FocusEvent| {
-        log::info!("{:?}",&e.target().expect("null").value_of().deref());
+        log::info!("{:?}",&e.target().expect("null").value_of().deref().into_serde::<Tip>());
         e.prevent_default();
     });
     html! {
@@ -157,13 +157,13 @@ pub fn drug() -> Html {
                                         <div class="field">
                                             <label class="label">{"药品名称"}</label>
                                             <div class="control">
-                                                <input class="input" type="text" placeholder="药品名称" />
+                                                <input class="input" name="name" id="name" type="text" placeholder="药品名称" />
                                             </div>
                                         </div>
                                         <div class="field">
                                             <label class="label">{"药品数量"}</label>
                                             <div class="control">
-                                                <input class="input" type="number" placeholder="药品数量"/>
+                                                <input class="input" name="money" id="money" type="number" placeholder="药品数量"/>
                                             </div>
                                         </div>
                                         <div class="field">

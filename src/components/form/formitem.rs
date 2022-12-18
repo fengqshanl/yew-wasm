@@ -7,13 +7,16 @@ pub struct FormItemProps {
     pub name: String,
     pub label: String,
     pub require: bool,
+    pub message: String,
 }
 
 #[function_component(FormItem)]
 pub fn form_item(props: &FormItemProps) -> Html {
     html!{
-       <div class="modal is-active">
-           
+        <div class="field">
+            <label class="label">{props.label.clone()}</label>
+            {props.children.clone()}
+            <p class="help is-success">{props.message.clone()}</p>
         </div>
     }
 }
