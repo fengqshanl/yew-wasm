@@ -1,6 +1,7 @@
 use crate::components::table::{ColumnTrait, OwnTableComponent};
 use gloo::console::{debug, info};
 use js_sys::Object;
+use crate::components::form::{form::Form, formitem::FormItem};
 use std::ops::Deref;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
@@ -20,7 +21,10 @@ pub struct Tip {
     pub name: String,
     pub money: usize,
 }
-
+#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
+pub struct TipTest {
+    pub name: String,
+}
 #[derive(Clone, PartialEq, Debug)]
 pub struct DrugColumn {
     title: String,
@@ -55,6 +59,7 @@ impl ColumnTrait<DrugData> for DrugColumn {
 pub fn drug() -> Html {
     let case_info: UseStateHandle<Vec<DrugData>> = use_state(Vec::default);
     let tip_list: UseStateHandle<Vec<Tip>> = use_state(Vec::default);
+    let form_ref: UseStateHandle<TipTest> = use_state(TipTest::default);
     let columns = vec![
         DrugColumn {
             title: "序号".to_string(),
@@ -153,6 +158,14 @@ pub fn drug() -> Html {
                                         }
                                     </div>
                                     <div class="column is-three-quarters">
+                                        <Form<TipTest> form={form_ref}>
+                                            <FormItem label={"这是一个测试"} name={"name"} require={true} message={"require name!"}>
+                                                <input class="input" type="text" placeholder="药品名称" />
+                                            </FormItem>
+                                            <FormItem label={"这是一个submit"} name={"submit"} require={true} message={"require submit name!"}>
+                                                <input type="submit" value="Send Request" />
+                                            </FormItem>
+                                        </Form<TipTest>>
                                         <form onsubmit={submit}>
                                         <div class="field">
                                             <label class="label">{"药品名称"}</label>

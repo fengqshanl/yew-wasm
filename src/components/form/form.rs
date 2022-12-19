@@ -14,13 +14,16 @@ pub struct FormProps<F: Properties + Clone + PartialEq + Debug> {
 
 #[function_component(Form)]
 pub fn form<F: Properties + Clone + PartialEq + Debug>(props: &FormProps<F>) -> Html {
-    let submit = Callback::from(|e: FocusEvent| {
-        println!("{:?}",e.target().expect("null").value_of());
-        props.children.clone().iter().map(|component|{
-            println!("{:?}", component.clone().props.clone());
-        });
-        e.prevent_default();
-    });
+    let submit = {
+        let props = props.clone();
+        Callback::from(move |e: FocusEvent| {
+            log::info!("{:?}",e.target().expect("null").value_of());
+            for component in  props.children.iter() {
+                log::info!("{:?}", component.props.require);
+            };
+            e.prevent_default();
+        })
+    };
     html!{
         <form onsubmit={submit}>
             { for props.children.iter() }
