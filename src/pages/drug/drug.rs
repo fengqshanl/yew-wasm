@@ -1,8 +1,6 @@
 use crate::components::table::{ColumnTrait, OwnTableComponent};
 use gloo::console::{debug, info};
-use js_sys::Object;
 use crate::components::form::{form::Form, formitem::FormItem};
-use std::ops::Deref;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew::{function_component, html};
@@ -20,10 +18,8 @@ pub struct DrugData {
 pub struct Tip {
     pub name: String,
     pub money: usize,
-}
-#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
-pub struct TipTest {
-    pub name: String,
+    pub number: usize,
+    pub sale: usize,
 }
 #[derive(Clone, PartialEq, Debug)]
 pub struct DrugColumn {
@@ -59,7 +55,7 @@ impl ColumnTrait<DrugData> for DrugColumn {
 pub fn drug() -> Html {
     let case_info: UseStateHandle<Vec<DrugData>> = use_state(Vec::default);
     let tip_list: UseStateHandle<Vec<Tip>> = use_state(Vec::default);
-    let form_ref: UseStateHandle<TipTest> = use_state(TipTest::default);
+    let form_ref: UseStateHandle<Tip> = use_state(Tip::default);
     let columns = vec![
         DrugColumn {
             title: "序号".to_string(),
@@ -117,10 +113,6 @@ pub fn drug() -> Html {
             || debug!("Running clean-up of effect on unmount")
         });
     }
-    let submit = Callback::from(|e: FocusEvent| {
-        log::info!("{:?}",&e.target().expect("null").value_of().deref().into_serde::<Tip>());
-        e.prevent_default();
-    });
     html! {
         <div class="drug-components"> 
             <div class="drug-components-top">
@@ -158,45 +150,25 @@ pub fn drug() -> Html {
                                         }
                                     </div>
                                     <div class="column is-three-quarters">
-                                        <Form<TipTest> form={form_ref}>
-                                            <FormItem label={"这是一个测试"} name={"name"} require={true} message={"require name!"}>
-                                                <input class="input" type="text" placeholder="药品名称" />
+                                        <Form<Tip> form={form_ref}>
+                                            <FormItem label={"药品名称"} name={"name"} require={true} message={"require name!"}>
+                                                <input class="input" name="name" type="text" placeholder="药品名称" />
                                             </FormItem>
-                                            <FormItem label={"这是一个submit"} name={"submit"} require={true} message={"require submit name!"}>
-                                                <input type="submit" value="Send Request" />
+                                            <FormItem label={"药品数量"} name={"number"} require={true} message={"require number!"}>
+                                                <input class="input" name={"number"} type="number" placeholder="药品数量" />
                                             </FormItem>
-                                        </Form<TipTest>>
-                                        <form onsubmit={submit}>
-                                        <div class="field">
-                                            <label class="label">{"药品名称"}</label>
-                                            <div class="control">
-                                                <input class="input" name="name" id="name" type="text" placeholder="药品名称" />
-                                            </div>
-                                        </div>
-                                        <div class="field">
-                                            <label class="label">{"药品数量"}</label>
-                                            <div class="control">
-                                                <input class="input" name="money" id="money" type="number" placeholder="药品数量"/>
-                                            </div>
-                                        </div>
-                                        <div class="field">
-                                            <label class="label">{"药品单价"}</label>
-                                            <div class="control">
-                                                <input class="input" type="number" placeholder="药品单价"/>
-                                            </div>
-                                        </div>
-                                        <div class="field">
-                                            <label class="label">{"药品总价"}</label>
-                                            <div class="control">
-                                                <input class="input" type="number" placeholder="药品总价"/>
-                                            </div>
-                                        </div>
-                                        <div class="field is-grouped">
-                                            <div class="control">
-                                                <button onclick={save_one_tip} class="button is-link">{"添加小计"}</button>
-                                            </div>
-                                        </div>
-                                        </form>
+                                            <FormItem label={"药品单价"} name={"money"} require={true} message={"require money!"}>
+                                                <input class="input" name="money" type="number" placeholder="药品单价" />
+                                            </FormItem>
+                                            <FormItem label={"药品总价"} name={"sale"} require={true} message={"require sale!"}>
+                                                <input class="input" name={"sale"} type="number" placeholder="药品总价" />
+                                            </FormItem>
+                                            <FormItem label={"submit"} name={"submit"} require={true} message={""}>
+                                                <div class="control">
+                                                    <button onclick={save_one_tip} type="submit" class="button is-link">{"添加小计"}</button>
+                                                </div>
+                                            </FormItem>
+                                        </Form<Tip>>
                                     </div>
                                 </div>
                             </div>
