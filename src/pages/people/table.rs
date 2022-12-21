@@ -26,6 +26,7 @@ pub struct PeopleColumn {
 
 impl ColumnTrait<PeopleData> for PeopleColumn {
     fn render(&self, value: String, record: &PeopleData, index: usize) -> Html {
+        log::info!("record : {:?}", record);
         match &value as &str {
             "index" => return html!{{index}},
             "drug_name" => return html!{{&record.name}},

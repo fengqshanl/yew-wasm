@@ -1450,6 +1450,7 @@ dependencies = [
  "chrono",
  "dotenv_codegen",
  "gloo",
+ "gloo-utils",
  "js-sys",
  "lazy_static",
  "log",

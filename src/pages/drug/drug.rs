@@ -1,8 +1,7 @@
+use crate::components::form::form::FormTypes;
 use crate::components::table::{ColumnTrait, OwnTableComponent};
 use gloo::console::{debug, info};
-use js_sys::Object;
 use crate::components::form::{form::Form, formitem::FormItem};
-use std::ops::Deref;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew::{function_component, html};
@@ -19,11 +18,22 @@ pub struct DrugData {
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
 pub struct Tip {
     pub name: String,
-    pub money: usize,
+    pub money: f64,
+    pub number: f64,
+    pub sale: f64,
 }
-#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
-pub struct TipTest {
-    pub name: String,
+
+impl FormTypes for Tip {
+    fn try_set(&mut self, name: &str, value: wasm_bindgen::JsValue) -> Result<(), std::io::Error>{
+        match name {
+            "name" => self.name = value.as_string().expect("name types convert JsValue to String error"),
+            "money" => self.money = value.as_string().expect("money convert error").parse::<f64>().unwrap(),
+            "number" => self.number = value.as_string().expect("number convert error").parse::<f64>().unwrap(),
+            "sale" => self.sale = value.as_string().expect("sale convert error").parse::<f64>().unwrap(),
+            _ => log::info!("匹配错误，无法找到对应元素")
+        }
+        Ok(()) 
+    }
 }
 #[derive(Clone, PartialEq, Debug)]
 pub struct DrugColumn {
@@ -59,7 +69,7 @@ impl ColumnTrait<DrugData> for DrugColumn {
 pub fn drug() -> Html {
     let case_info: UseStateHandle<Vec<DrugData>> = use_state(Vec::default);
     let tip_list: UseStateHandle<Vec<Tip>> = use_state(Vec::default);
-    let form_ref: UseStateHandle<TipTest> = use_state(TipTest::default);
+    let form_ref: UseStateHandle<Tip> = use_state(Tip::default);
     let columns = vec![
         DrugColumn {
             title: "序号".to_string(),
@@ -93,13 +103,9 @@ pub fn drug() -> Html {
 
     let save_one_tip = {
         let tip_list = tip_list.clone();
-        Callback::from(move |_| {
-            let one_tip = Tip{
-                name: "test".to_string(),
-                money: 14
-            };
+        Callback::from(move |sale: Tip| {
             let mut tips = (*tip_list).clone();
-            tips.push(one_tip);
+            tips.push(sale);
             tip_list.set(tips.to_vec());
         })
     };
@@ -117,10 +123,7 @@ pub fn drug() -> Html {
             || debug!("Running clean-up of effect on unmount")
         });
     }
-    let submit = Callback::from(|e: FocusEvent| {
-        log::info!("{:?}",&e.target().expect("null").value_of().deref().into_serde::<Tip>());
-        e.prevent_default();
-    });
+    
     html! {
         <div class="drug-components"> 
             <div class="drug-components-top">
@@ -149,54 +152,38 @@ pub fn drug() -> Html {
                                         {
                                             for tip_list.clone().iter().map(|c|{
                                                 html!{
-                                                    <div>
-                                                        {c.name.clone()}
-                                                        {c.money.clone()}
+                                                    <div class="drug-sale-list-item">
+                                                        <div class="drug-sale-list-item-name">
+                                                            {c.name.clone()}
+                                                        </div>
+                                                        <div class="drug-sale-list-item-money">
+                                                            {c.money.clone()}
+                                                        </div>
                                                     </div>
                                                 }
                                             })
                                         }
                                     </div>
                                     <div class="column is-three-quarters">
-                                        <Form<TipTest> form={form_ref}>
-                                            <FormItem label={"这是一个测试"} name={"name"} require={true} message={"require name!"}>
-                                                <input class="input" type="text" placeholder="药品名称" />
+                                        <Form<Tip> form={save_one_tip}>
+                                            <FormItem label={"药品名称"} name={"name"} require={true} message={"require name!"}>
+                                                <input class="input" name="name" type="text" placeholder="药品名称" />
                                             </FormItem>
-                                            <FormItem label={"这是一个submit"} name={"submit"} require={true} message={"require submit name!"}>
-                                                <input type="submit" value="Send Request" />
+                                            <FormItem label={"药品数量"} name={"number"} require={true} message={"require number!"}>
+                                                <input class="input" name={"number"} type="number" placeholder="药品数量" />
                                             </FormItem>
-                                        </Form<TipTest>>
-                                        <form onsubmit={submit}>
-                                        <div class="field">
-                                            <label class="label">{"药品名称"}</label>
-                                            <div class="control">
-                                                <input class="input" name="name" id="name" type="text" placeholder="药品名称" />
-                                            </div>
-                                        </div>
-                                        <div class="field">
-                                            <label class="label">{"药品数量"}</label>
-                                            <div class="control">
-                                                <input class="input" name="money" id="money" type="number" placeholder="药品数量"/>
-                                            </div>
-                                        </div>
-                                        <div class="field">
-                                            <label class="label">{"药品单价"}</label>
-                                            <div class="control">
-                                                <input class="input" type="number" placeholder="药品单价"/>
-                                            </div>
-                                        </div>
-                                        <div class="field">
-                                            <label class="label">{"药品总价"}</label>
-                                            <div class="control">
-                                                <input class="input" type="number" placeholder="药品总价"/>
-                                            </div>
-                                        </div>
-                                        <div class="field is-grouped">
-                                            <div class="control">
-                                                <button onclick={save_one_tip} class="button is-link">{"添加小计"}</button>
-                                            </div>
-                                        </div>
-                                        </form>
+                                            <FormItem label={"药品单价"} name={"money"} require={true} message={"require money!"}>
+                                                <input class="input" name="money" type="number" placeholder="药品单价" />
+                                            </FormItem>
+                                            <FormItem label={"药品总价"} name={"sale"} require={true} message={"require sale!"}>
+                                                <input class="input" name={"sale"} type="number" placeholder="药品总价" />
+                                            </FormItem>
+                                            <FormItem label={"submit"} name={"submit"} require={true} message={""}>
+                                                <div class="control">
+                                                    <button type="submit" class="button is-link">{"添加小计"}</button>
+                                                </div>
+                                            </FormItem>
+                                        </Form<Tip>>
                                     </div>
                                 </div>
                             </div>

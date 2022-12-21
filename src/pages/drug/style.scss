@@ -27,6 +27,20 @@
         }
         .drug-content-left{ 
             border-right: 1px solid black;
+            .drug-sale-list-item{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                transition: saleEaseIn ease-in 3s linear;
+                @keyframes saleEaseIn {
+                    0%{
+                        transform:translateX(200%);
+                    }
+                    100%{
+                        transform: translateX(0%);
+                    }
+                }
+            }
         }
         .drug-card-content{
             height:100%;
