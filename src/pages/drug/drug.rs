@@ -1,3 +1,4 @@
+use crate::components::form::form::FormTypes;
 use crate::components::table::{ColumnTrait, OwnTableComponent};
 use gloo::console::{debug, info};
 use crate::components::form::{form::Form, formitem::FormItem};
@@ -17,9 +18,22 @@ pub struct DrugData {
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
 pub struct Tip {
     pub name: String,
-    pub money: usize,
-    pub number: usize,
-    pub sale: usize,
+    pub money: f64,
+    pub number: f64,
+    pub sale: f64,
+}
+
+impl FormTypes for Tip {
+    fn try_set(&mut self, name: &str, value: wasm_bindgen::JsValue) -> Result<(), std::io::Error>{
+        match name {
+            "name" => self.name = value.as_string().expect("name types convert JsValue to String error"),
+            "money" => self.money = value.as_string().expect("money convert error").parse::<f64>().unwrap(),
+            "number" => self.number = value.as_string().expect("number convert error").parse::<f64>().unwrap(),
+            "sale" => self.sale = value.as_string().expect("sale convert error").parse::<f64>().unwrap(),
+            _ => log::info!("匹配错误，无法找到对应元素")
+        }
+        Ok(()) 
+    }
 }
 #[derive(Clone, PartialEq, Debug)]
 pub struct DrugColumn {
@@ -89,13 +103,9 @@ pub fn drug() -> Html {
 
     let save_one_tip = {
         let tip_list = tip_list.clone();
-        Callback::from(move |_| {
-            let one_tip = Tip{
-                name: "test".to_string(),
-                money: 14
-            };
+        Callback::from(move |sale: Tip| {
             let mut tips = (*tip_list).clone();
-            tips.push(one_tip);
+            tips.push(sale);
             tip_list.set(tips.to_vec());
         })
     };
@@ -113,6 +123,7 @@ pub fn drug() -> Html {
             || debug!("Running clean-up of effect on unmount")
         });
     }
+    
     html! {
         <div class="drug-components"> 
             <div class="drug-components-top">
@@ -141,16 +152,20 @@ pub fn drug() -> Html {
                                         {
                                             for tip_list.clone().iter().map(|c|{
                                                 html!{
-                                                    <div>
-                                                        {c.name.clone()}
-                                                        {c.money.clone()}
+                                                    <div class="drug-sale-list-item">
+                                                        <div class="drug-sale-list-item-">
+                                                            {c.name.clone()}
+                                                        </div>
+                                                        <div>
+                                                            {c.money.clone()}
+                                                        </div>
                                                     </div>
                                                 }
                                             })
                                         }
                                     </div>
                                     <div class="column is-three-quarters">
-                                        <Form<Tip> form={form_ref}>
+                                        <Form<Tip> form={save_one_tip}>
                                             <FormItem label={"药品名称"} name={"name"} require={true} message={"require name!"}>
                                                 <input class="input" name="name" type="text" placeholder="药品名称" />
                                             </FormItem>
@@ -165,7 +180,7 @@ pub fn drug() -> Html {
                                             </FormItem>
                                             <FormItem label={"submit"} name={"submit"} require={true} message={""}>
                                                 <div class="control">
-                                                    <button onclick={save_one_tip} type="submit" class="button is-link">{"添加小计"}</button>
+                                                    <button type="submit" class="button is-link">{"添加小计"}</button>
                                                 </div>
                                             </FormItem>
                                         </Form<Tip>>
