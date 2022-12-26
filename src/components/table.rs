@@ -1,5 +1,6 @@
 use std::fmt::{Debug};
 
+use stylist::css;
 use yew::prelude::*;
 
 #[derive(Properties, Clone, PartialEq, Debug)]
@@ -15,6 +16,7 @@ pub struct TableProps<
 pub trait ColumnTrait<R> {
     fn render(&self, value: String, record: &R, index: usize) -> Html;
     fn title(&self) -> String;
+    fn center(&self) -> String;
     fn data_index(&self) -> String;
 }
 
@@ -32,28 +34,32 @@ where
         let columns = props.columns.clone();
         use_effect_with_deps(
             move |data_info| {
+                let mut data_li = (*data_list).clone();
                 for (index, row) in data_info.clone().iter().enumerate() {
                         let html = html! {
                             <tr>
                                 {
                                     for columns.clone().iter().map(|col|{
-                                        html!{<th>{col.clone().render(col.clone().data_index(), row, index)}</th>}
+                                        html!{
+                                            <th class={css!("color: red;")}>
+                                                {col.clone().render(col.clone().data_index(), row, index)}
+                                            </th>
+                                        }
                                     })
                                 }
                             </tr>
                           };
-                          let mut data_li = (*data_list).clone();
                           data_li.push(html);
-                          data_list.set(data_li);
-                }
-                || ()
+                };
+                data_list.set(data_li);
+                || log::info!("table component render error!")
             },
             data_info,
         );
     }
     html! {
         <div>
-            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+            <table class="table is-hoverable is-fullwidth">
                 <thead>
                     <tr>
                         {

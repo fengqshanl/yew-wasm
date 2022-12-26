@@ -2,7 +2,9 @@
   width: 100%;
   display: flex;
   padding: 1em;
+  overflow: auto;
   flex-direction: column;
+  height: 90vh;
   .table-header-col{
     text-align: center;
   }
