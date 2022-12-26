@@ -1027,9 +1027,9 @@ dependencies = [
 
 [[package]]
 name = "stylist"
-version = "0.11.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b97caff4bedd2f8a36a01ed7b4ba9427c4b98961b74bee6a90b0d778679858f"
+checksum = "7687c91ed89b4f6a80e41a354263555980187b6c9ca6c0408089c6781dca4377"
 dependencies = [
  "fastrand",
  "instant",
@@ -1038,13 +1038,14 @@ dependencies = [
  "stylist-macros",
  "wasm-bindgen",
  "web-sys",
+ "yew",
 ]
 
 [[package]]
 name = "stylist-core"
-version = "0.11.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2dbedcc3841a63357c76c00b5bc45301aaaf98cdb2c0a580aefe289a6b75f243"
+checksum = "25355f8d91ef7d250ab53f1f8411b458f54c7dcf76a1cfef47355c0b1d0bfed9"
 dependencies = [
  "nom",
  "once_cell",
@@ -1054,9 +1055,9 @@ dependencies = [
 
 [[package]]
 name = "stylist-macros"
-version = "0.11.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1175455fbb6b17b67d0db70de0218ed81df8587a58eddccc5212e708db1ca973"
+checksum = "7930b612c9250dac3735aa35fcc1084e51ca84bf7a270f23856df08598821251"
 dependencies = [
  "itertools",
  "litrs",

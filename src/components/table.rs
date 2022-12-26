@@ -1,6 +1,5 @@
 use std::fmt::{Debug};
-
-use stylist::css;
+use stylist::yew::styled_component;
 use yew::prelude::*;
 
 #[derive(Properties, Clone, PartialEq, Debug)]
@@ -16,11 +15,13 @@ pub struct TableProps<
 pub trait ColumnTrait<R> {
     fn render(&self, value: String, record: &R, index: usize) -> Html;
     fn title(&self) -> String;
-    fn center(&self) -> String;
+    fn center(&self) -> String {
+        "center".to_string()
+    }
     fn data_index(&self) -> String;
 }
 
-#[function_component(OwnTableComponent)]
+#[styled_component(OwnTableComponent)]
 pub fn table<D,C>(props: &TableProps<D,C>) -> Html
 where
     D: Properties + Clone + PartialEq + Debug + Default + 'static,
@@ -40,8 +41,12 @@ where
                             <tr>
                                 {
                                     for columns.clone().iter().map(|col|{
+                                        let mut style = css!("text-align: left;");
+                                        if col.center() == "center".to_string() {
+                                            style = css!("text-align: center;");
+                                        }
                                         html!{
-                                            <th class={css!("color: red;")}>
+                                            <th class={style}>
                                                 {col.clone().render(col.clone().data_index(), row, index)}
                                             </th>
                                         }

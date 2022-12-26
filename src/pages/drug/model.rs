@@ -52,6 +52,9 @@ impl ColumnTrait<DrugData> for DrugColumn {
     fn title(&self) -> String {
         self.title.clone()
     }
+    fn center(&self) -> String {
+        "center".to_string()
+    }
     fn data_index(&self) -> String {
         self.data_index.clone()
     }
