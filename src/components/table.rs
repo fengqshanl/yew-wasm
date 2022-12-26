@@ -1,4 +1,4 @@
-use std::fmt::{Debug};
+use std::{fmt::{Debug}, cell::RefCell, rc::Rc};
 use stylist::yew::styled_component;
 use yew::prelude::*;
 
@@ -10,7 +10,7 @@ pub struct TableProps<
     #[prop_or_default]
     pub data: Vec<D>,
     pub columns: Vec<C>,
-    pub pagination: bool,
+    pub pagination: &'static bool,
 }
 pub trait ColumnTrait<R> {
     fn render(&self, value: String, record: &R, index: usize) -> Html;
@@ -21,6 +21,14 @@ pub trait ColumnTrait<R> {
     fn data_index(&self) -> String;
 }
 
+#[derive(Default)]
+// pagination configure struct
+pub struct PC {
+    size: usize,
+    page: usize,
+    offset: usize,
+} 
+
 #[styled_component(OwnTableComponent)]
 pub fn table<D,C>(props: &TableProps<D,C>) -> Html
 where
@@ -28,7 +36,8 @@ where
     C: Clone + PartialEq + Debug + ColumnTrait<D> + 'static
 {
     let data_list: UseStateHandle<Vec<Html>> = use_state(Vec::default);
-
+    let whole_list: Rc<RefCell<Vec<D>>> = use_mut_ref(Vec::default);
+    let p_c = use_state( || PC{ size: 20, page: 1, offset: 0});
     {
         let data_list = data_list.clone();
         let data_info = props.data.clone();
@@ -36,7 +45,12 @@ where
         use_effect_with_deps(
             move |data_info| {
                 let mut data_li = (*data_list).clone();
-                for (index, row) in data_info.clone().iter().enumerate() {
+                *whole_list.borrow_mut() = data_info.clone();
+                let mut size = data_info.len();
+                if props.pagination.clone() {
+                    size = p_c.clone().size;
+                }
+                for (index, row) in (&data_info.clone()[0..size]).iter().enumerate() {
                         let html = html! {
                             <tr>
                                 {
@@ -61,7 +75,7 @@ where
             },
             data_info,
         );
-    }
+    };
     html! {
         <div>
             <table class="table is-hoverable is-fullwidth">
@@ -83,11 +97,17 @@ where
                 </tbody>
             </table>
             { if props.pagination.clone() {
+                let page_all = data_info.len() / p_c.size;
                 html!{
                     <nav class="pagination is-centered" role="navigation" aria-label="pagination">
                         <a class="pagination-previous">{"上一页"}</a>
                         <a class="pagination-next">{"下一页"}</a>
                         <ul class="pagination-list">
+                            {
+                                match p_c.page {
+                                    1 => html!{}
+                                }
+                            }
                             <li><a class="pagination-link" aria-label="Goto page 1">{"1"}</a></li>
                             <li><span class="pagination-ellipsis">{"……"}</span></li>
                             <li><a class="pagination-link" aria-label="Goto page 45">{"45"}</a></li>
