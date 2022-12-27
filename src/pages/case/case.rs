@@ -3,11 +3,11 @@ use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew::{html, Properties};
 
-#[derive(Clone, Debug, Eq, PartialEq, Properties, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Properties, Default, Deserialize, Serialize, Copy)]
 pub struct CaseData {
-    name: String,
-    kind: String,
-    out_time: String
+    name: &'static str,
+    kind: &'static str,
+    out_time: &'static str
 }
 #[derive(Clone, PartialEq, Debug)]
 pub struct CaseColumn {

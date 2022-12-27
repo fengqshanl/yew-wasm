@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew::{html, Properties};
 
-#[derive(Clone, Debug, Eq, PartialEq, Properties, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Properties, Default, Deserialize, Serialize, Copy)]
 pub struct SetData {}
 
 #[derive(Clone, PartialEq, Debug)]

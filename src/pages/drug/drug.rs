@@ -7,12 +7,12 @@ use yew::prelude::*;
 use yew::{function_component, html};
 use yew_hooks::{use_async, use_effect_once};
 
-#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize, Copy)]
 pub struct DrugData {
     pub index: usize,
-    pub name: String,
-    pub number: String,
-    pub money: String,
+    pub name: &'static str,
+    pub number: &'static str,
+    pub money: &'static str,
 }
 
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
@@ -115,9 +115,9 @@ pub fn drug() -> Html {
         use_effect_once(move || {
             let case_arr = vec!(DrugData {
                 index: 1,
-                name: "name".to_string(),
-                number: "number".to_string(),
-                money: "money".to_string(),
+                name: "name",
+                number: "number",
+                money: "money",
             });
             case_info.set(case_arr.to_vec());
             || debug!("Running clean-up of effect on unmount")
