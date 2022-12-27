@@ -1,5 +1,6 @@
 use std::{fmt::{Debug}, cell::RefCell, rc::Rc};
 use stylist::yew::styled_component;
+use validator::HasLen;
 use yew::prelude::*;
 use super::pagination::pagination::{PC, Pagination};
 
@@ -46,31 +47,67 @@ where
                 if pagination {
                     size = p_c.clone().size;
                 }
-                for (index, row) in (&data_info.clone()[0..size]).iter().enumerate() {
-                        let html = html! {
-                            <tr>
-                                {
-                                    for columns.clone().iter().map(|col|{
-                                        let mut style = css!("text-align: left;");
-                                        if col.center() == "center".to_string() {
-                                            style = css!("text-align: center;");
-                                        }
-                                        html!{
-                                            <th class={style}>
-                                                {col.clone().render(col.clone().data_index(), row, index)}
-                                            </th>
-                                        }
-                                    })
-                                }
-                            </tr>
-                          };
-                          data_li.push(html);
-                };
-                data_list.set(data_li);
+                log::info!("size: {:?}, data_info.len() :{:?}",size, data_info.len());
+                if data_info.len() > 0 {
+                    for (index, row) in (data_info.clone()[0..size]).iter().enumerate() {
+                            let html = html! {
+                                <tr>
+                                    {
+                                        for columns.clone().iter().map(|col|{
+                                            let mut style = css!("text-align: left;");
+                                            if col.center() == "center".to_string() {
+                                                style = css!("text-align: center;");
+                                            }
+                                            html!{
+                                                <th class={style}>
+                                                    {col.clone().render(col.clone().data_index(), row, index)}
+                                                </th>
+                                            }
+                                        })
+                                    }
+                                </tr>
+                            };
+                            data_li.push(html);
+                    }; 
+                    data_list.set(data_li);
+                }
                 || log::info!("table component render error!")
             },
             data_info,
         );
+    };
+    let page_change = {
+        let data_list = data_list.clone();
+        let columns = props.columns.clone();
+        let whole_list = whole_list.clone();
+        let p_c = p_c.clone();
+        Callback::from(move |index|{
+            let left = (index - 1) * p_c.size;
+            let right = index * p_c.size;
+            let mut data_li = vec![];
+            for (index, row) in (whole_list.borrow_mut()[left..right]).iter().enumerate() {
+                            let html = html! {
+                                <tr>
+                                    {
+                                        for columns.clone().iter().map(|col|{
+                                            let mut style = css!("text-align: left;");
+                                            if col.center() == "center".to_string() {
+                                                style = css!("text-align: center;");
+                                            }
+                                            html!{
+                                                <th class={style}>
+                                                    {col.clone().render(col.clone().data_index(), row, index)}
+                                                </th>
+                                            }
+                                        })
+                                    }
+                                </tr>
+                            };
+                data_li.push(html);
+            }; 
+            data_list.set(data_li);
+            ()
+        })
     };
     html! {
         <div>
@@ -95,7 +132,7 @@ where
             {if props.pagination.clone() {
                     let list = &*whole_list.borrow_mut();
                     html!{
-                        <Pagination length={list.len()} config={p_c.clone()} />
+                        <Pagination page_change={page_change} length={list.len()} config={p_c.clone()} />
                     }
                 } else {
                     html!{ }

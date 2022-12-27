@@ -156,7 +156,7 @@ pub fn drug_table() -> Html {
                    drug_number: index 
                 })
             }
-            log::info!("arr: {:?}", arr);
+            // log::info!("arr: {:?}", arr);
             update_info.set(arr);
             || log::info!("Running clean-up of effect on unmount")
         });
