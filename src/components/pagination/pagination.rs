@@ -21,7 +21,6 @@ pub fn pagination(props: &PaginationProps) -> Html {
     let pre = {
         let props = props.clone();
         Callback::from(move|_|{
-            log::info!("pre click{:?}",props.config.page);
             if props.config.page > 1 {
                 props.config.set(PC{
                     size: props.config.size,
@@ -36,7 +35,6 @@ pub fn pagination(props: &PaginationProps) -> Html {
         let props = props.clone();
         let whole_len = props.length / props.config.size;
         Callback::from(move|_|{
-            log::info!("pre click:{:?};whole:{:?}",props.config.page, whole_len);
             if props.config.page < whole_len {
                 props.config.set(PC{
                     size: props.config.size,
@@ -48,7 +46,10 @@ pub fn pagination(props: &PaginationProps) -> Html {
         })
     };
     let ht = {
-        let pa = props.length / props.config.size;
+        let mut pa = props.length / props.config.size;
+        if pa == 0 {
+            pa = 1
+        }
         let mut arr = vec![];
         for index in 1..=pa {
             arr.push(html!{

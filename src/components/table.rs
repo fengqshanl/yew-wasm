@@ -44,10 +44,9 @@ where
                 let mut data_li = (*data_list).clone();
                 *whole_list.borrow_mut() = data_info.clone();
                 let mut size = data_info.len();
-                if pagination {
+                if pagination && (size > p_c.size) {
                     size = p_c.clone().size;
                 }
-                log::info!("size: {:?}, data_info.len() :{:?}",size, data_info.len());
                 if data_info.len() > 0 {
                     for (index, row) in (data_info.clone()[0..size]).iter().enumerate() {
                             let html = html! {
@@ -80,10 +79,8 @@ where
         Callback::from(move |index: usize|{
             let left = (index - 1) * p_c.size;
             let right = index * p_c.size;
-            log::info!("page_change_emit:left:{:?};right:{:?}",left,right);
             let mut data_li = vec![];
             for (index, row) in (whole_list.borrow_mut()[left..right]).iter().enumerate() {
-                log::info!("for in row:{:?}",row);
                 let html = html! {
                     <tr>
                         {
@@ -99,7 +96,6 @@ where
                 };
                 data_li.push(html);
             }; 
-            // log::info!("emit after data_li:{:?}",data_li);
             data_list.set(data_li);
             ()
         })

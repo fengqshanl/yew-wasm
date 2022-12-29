@@ -26,7 +26,6 @@ pub struct PeopleColumn {
 
 impl ColumnTrait<PeopleData> for PeopleColumn {
     fn render(&self, value: String, record: &PeopleData, index: usize) -> Html {
-        // log::info!("record : {:?}", record);
         match &value as &str {
             "index" => return html!{{index + 1}},
             "drug_name" => return html!{{&record.name}},
@@ -156,7 +155,6 @@ pub fn drug_table() -> Html {
             //        drug_number: index 
             //     })
             // }
-            // log::info!("arr: {:?}", arr);
             // update_info.set(arr);
             || log::info!("Running clean-up of effect on unmount")
         });

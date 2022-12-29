@@ -11,7 +11,6 @@ pub fn guest_component() -> Html {
     let add_drug = {
         let up = update_info.clone();
         use_async(async move {
-            log::info!("request");
             request::<PeopleData, ()>(reqwest::Method::POST, "/drug".to_string(), (*up).clone()).await
         })
     };
