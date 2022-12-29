@@ -1,4 +1,4 @@
-use std::{fmt::{Debug}, ops::RangeInclusive};
+use std::{fmt::{Debug}};
 use yew::prelude::*;
 
 #[derive(Properties, Clone, PartialEq, Debug)]
@@ -18,30 +18,56 @@ pub struct PC {
 
 #[function_component(Pagination)]
 pub fn pagination(props: &PaginationProps) -> Html {
-    // 根据 长度的大小决定样式展示 
-    let pa_len: &'static usize = &(props.length / props.config.size);
-    let page_change = {
-            let page_change = props.page_change.clone();
-            Callback::from(move |index|{
-                page_change.emit(index);
+    let pre = {
+        let props = props.clone();
+        Callback::from(move|_|{
+            log::info!("pre click{:?}",props.config.page);
+            if props.config.page > 1 {
+                props.config.set(PC{
+                    size: props.config.size,
+                    offset: props.config.offset - props.config.size,
+                    page: props.config.page - 1
+                });
+                props.page_change.emit(props.config.page - 1)
+            }
+        })
+    };
+    let after = {
+        let props = props.clone();
+        let whole_len = props.length / props.config.size;
+        Callback::from(move|_|{
+            log::info!("pre click:{:?};whole:{:?}",props.config.page, whole_len);
+            if props.config.page < whole_len {
+                props.config.set(PC{
+                    size: props.config.size,
+                    offset: props.config.size + props.config.offset,
+                    page: props.config.page + 1
+                });
+                props.page_change.emit(props.config.page + 1)
+            }
+        })
+    };
+    let ht = {
+        let pa = props.length / props.config.size;
+        let mut arr = vec![];
+        for index in 1..=pa {
+            arr.push(html!{
+                <li>
+                    <a class="pagination-link" aria-label={format!("Goto page {:?}",index)}>
+                        { format!("{:?}",index) }
+                    </a>
+                </li>
             })
-        }; 
+        }
+        arr
+    };
         html!{
             <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-                <a class="pagination-previous">{"上一页"}</a>
-                <a class="pagination-next">{"下一页"}</a>
+                <a class="pagination-previous" onclick={pre}>{"上一页"}</a>
+                <a class="pagination-next" onclick={after}>{"下一页"}</a>
                 <ul class="pagination-list">
                     {
-                        for [1..=*pa_len].iter().map(|index: &RangeInclusive<usize>| {
-                            html!{
-                                <li>
-                                    <a class="pagination-link" onclick={|_| page_change.emit(index)}
-                                        aria-label={format!("Goto page {:?}",index)}>
-                                        { format!("{:?}",index) }
-                                    </a>
-                                </li>
-                            }
-                        })
+                        for ht
                     }
                 </ul>
             </nav>

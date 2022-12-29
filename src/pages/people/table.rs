@@ -28,7 +28,7 @@ impl ColumnTrait<PeopleData> for PeopleColumn {
     fn render(&self, value: String, record: &PeopleData, index: usize) -> Html {
         // log::info!("record : {:?}", record);
         match &value as &str {
-            "index" => return html!{{index}},
+            "index" => return html!{{index + 1}},
             "drug_name" => return html!{{&record.name}},
             "drug_kind" => return html!{{&record.a_b_classify}},
             "usage_dosage" => return html!{{&record.usage_dosage}}, 
@@ -140,56 +140,56 @@ pub fn drug_table() -> Html {
     };
 
     {
-        // let drug_info = drug_info.clone();
-        let update_info = update_info.clone();
+        let drug_info = drug_info.clone();
+        // let update_info = update_info.clone();
         use_effect_once(move || {
-            // drug_info.run();
-            let mut arr:Vec<PeopleData> = vec![];
-            for index in 0..100 {
-                arr.push(PeopleData{
-                   drug_id: "".to_string(),
-                   class_id: "".to_string(),
-                   name: "".to_string(),
-                   matters_need_attention: "".to_string(),
-                   a_b_classify: "".to_string(),
-                   usage_dosage: "".to_string(),
-                   drug_number: index 
-                })
-            }
+            drug_info.run();
+            // let mut arr:Vec<PeopleData> = vec![];
+            // for index in 0..100 {
+            //     arr.push(PeopleData{
+            //        drug_id: "".to_string(),
+            //        class_id: "".to_string(),
+            //        name: "".to_string(),
+            //        matters_need_attention: "".to_string(),
+            //        a_b_classify: "".to_string(),
+            //        usage_dosage: "".to_string(),
+            //        drug_number: index 
+            //     })
+            // }
             // log::info!("arr: {:?}", arr);
-            update_info.set(arr);
+            // update_info.set(arr);
             || log::info!("Running clean-up of effect on unmount")
         });
     }
 
-    // {
-    //     let update_info = update_info.clone();
-    //     let drug_info = drug_info.clone();
-    //     use_effect_with_deps(
-    //         move |drug_info| {
-    //             if let Some(drug_info) = &drug_info.data {
-    //                 update_info.set(
-    //                     drug_info
-    //                         .iter()
-    //                         .map(move |drug_info| PeopleData {
-    //                             drug_id: drug_info.drug_id.to_string(),
-    //                             class_id: drug_info.class_id.to_string(),
-    //                             name: drug_info.name.to_string(),
-    //                             matters_need_attention: drug_info
-    //                                 .matters_need_attention
-    //                                 .to_string(),
-    //                             a_b_classify: drug_info.a_b_classify.to_string(),
-    //                             usage_dosage: drug_info.usage_dosage.to_string(),
-    //                             drug_number: drug_info.drug_number,
-    //                         })
-    //                         .collect(),
-    //                 )
-    //             }
-    //             || ()
-    //         },
-    //         drug_info,
-    //     )
-    // }
+    {
+        let update_info = update_info.clone();
+        let drug_info = drug_info.clone();
+        use_effect_with_deps(
+            move |drug_info| {
+                if let Some(drug_info) = &drug_info.data {
+                    update_info.set(
+                        drug_info
+                            .iter()
+                            .map(move |drug_info| PeopleData {
+                                drug_id: drug_info.drug_id.to_string(),
+                                class_id: drug_info.class_id.to_string(),
+                                name: drug_info.name.to_string(),
+                                matters_need_attention: drug_info
+                                    .matters_need_attention
+                                    .to_string(),
+                                a_b_classify: drug_info.a_b_classify.to_string(),
+                                usage_dosage: drug_info.usage_dosage.to_string(),
+                                drug_number: drug_info.drug_number,
+                            })
+                            .collect(),
+                    )
+                }
+                || ()
+            },
+            drug_info,
+        )
+    }
 
     return html! {
         <div class="people-components">

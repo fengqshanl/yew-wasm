@@ -54,12 +54,8 @@ where
                                 <tr>
                                     {
                                         for columns.clone().iter().map(|col|{
-                                            let mut style = css!("text-align: left;");
-                                            if col.center() == "center".to_string() {
-                                                style = css!("text-align: center;");
-                                            }
                                             html!{
-                                                <th class={style}>
+                                                <th>
                                                     {col.clone().render(col.clone().data_index(), row, index)}
                                                 </th>
                                             }
@@ -81,30 +77,29 @@ where
         let columns = props.columns.clone();
         let whole_list = whole_list.clone();
         let p_c = p_c.clone();
-        Callback::from(move |index|{
+        Callback::from(move |index: usize|{
             let left = (index - 1) * p_c.size;
             let right = index * p_c.size;
+            log::info!("page_change_emit:left:{:?};right:{:?}",left,right);
             let mut data_li = vec![];
             for (index, row) in (whole_list.borrow_mut()[left..right]).iter().enumerate() {
-                            let html = html! {
-                                <tr>
-                                    {
-                                        for columns.clone().iter().map(|col|{
-                                            let mut style = css!("text-align: left;");
-                                            if col.center() == "center".to_string() {
-                                                style = css!("text-align: center;");
-                                            }
-                                            html!{
-                                                <th class={style}>
-                                                    {col.clone().render(col.clone().data_index(), row, index)}
-                                                </th>
-                                            }
-                                        })
-                                    }
-                                </tr>
-                            };
+                log::info!("for in row:{:?}",row);
+                let html = html! {
+                    <tr>
+                        {
+                            for columns.clone().iter().map(|col|{
+                                html!{
+                                    <th>
+                                        {col.clone().render(col.clone().data_index(), row, index)}
+                                    </th>
+                                }
+                            })
+                        }
+                    </tr>
+                };
                 data_li.push(html);
             }; 
+            // log::info!("emit after data_li:{:?}",data_li);
             data_list.set(data_li);
             ()
         })
