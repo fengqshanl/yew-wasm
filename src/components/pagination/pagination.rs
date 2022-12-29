@@ -61,14 +61,15 @@ pub fn pagination(props: &PaginationProps) -> Html {
         }
         arr
     };
-        html!{
-            <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-                <a class="pagination-previous" onclick={pre}>{"上一页"}</a>
-                <a class="pagination-next" onclick={after}>{"下一页"}</a>
-                <ul class="pagination-list">
-                    {
-                        for ht
-                    }
-                </ul>
-            </nav>
-}}
+    html!{
+        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+            <a class="pagination-previous" onclick={pre}>{"上一页"}</a>
+            <a class="pagination-next" onclick={after}>{"下一页"}</a>
+            <ul class="pagination-list">
+                {
+                    for ht
+                }
+            </ul>
+        </nav>
+    }
+}
