@@ -1,6 +1,5 @@
 use std::{fmt::{Debug}, cell::RefCell, rc::Rc};
 use stylist::yew::styled_component;
-use validator::HasLen;
 use yew::prelude::*;
 use super::pagination::pagination::{PC, Pagination};
 

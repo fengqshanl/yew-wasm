@@ -1,4 +1,3 @@
-#[macro_use]
 extern crate yew;
 extern crate validator_derive;
 
@@ -28,6 +27,11 @@ impl Model {
                     <li>
                         <Link<Route> classes={"is-ghost"} to={Route::Home}>
                             {"首页"}
+                        </Link<Route>>
+                    </li>
+                    <li>
+                        <Link<Route> classes={"is-ghost"} to={Route::DrugIn}>
+                            {"药品入库"}
                         </Link<Route>>
                     </li>
                     <li>

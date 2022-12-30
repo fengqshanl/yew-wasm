@@ -1,11 +1,11 @@
 use crate::components::form::form::FormTypes;
 use crate::components::table::{ColumnTrait, OwnTableComponent};
-use gloo::console::{debug, info};
+use gloo::console::{debug};
 use crate::components::form::{form::Form, formitem::FormItem};
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew::{function_component, html};
-use yew_hooks::{use_async, use_effect_once};
+use yew_hooks::{use_effect_once};
 
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize, Copy)]
 pub struct DrugData {
@@ -42,7 +42,7 @@ pub struct DrugColumn {
 }
 
 impl ColumnTrait<DrugData> for DrugColumn {
-    fn render(&self, value: String, record: &DrugData, index: usize) -> Html {
+    fn render(&self, value: String, _record: &DrugData, index: usize) -> Html {
         match &value as &str {
             "index" => return html! {{index + 1}},
             "name" => {
@@ -69,7 +69,7 @@ impl ColumnTrait<DrugData> for DrugColumn {
 pub fn drug() -> Html {
     let case_info: UseStateHandle<Vec<DrugData>> = use_state(Vec::default);
     let tip_list: UseStateHandle<Vec<Tip>> = use_state(Vec::default);
-    let form_ref: UseStateHandle<Tip> = use_state(Tip::default);
+    // let form_ref: UseStateHandle<Tip> = use_state(Tip::default);
     let columns = vec![
         DrugColumn {
             title: "序号".to_string(),
@@ -136,58 +136,58 @@ pub fn drug() -> Html {
                 <OwnTableComponent<DrugData, DrugColumn> data={(*case_info).clone()} columns={columns} pagination={false} />
             </div>
             <div class="card drug-card-bottom">
-                        <header class="card-header">
-                            <p class="card-header-title">
-                                {"单笔药品清单"}
-                            </p>
-                            <button class="button is-info is-outlined">
-                                {"保存此笔交易"}
-                            </button>
-                        </header>
-                        <div class="card-content">
-                            <div class="content drug-card-content">
-                                <div class="columns">
-                                    <div class="column drug-content-left">
-                                        {"本次交易列表"}
-                                        {
-                                            for tip_list.clone().iter().map(|c|{
-                                                html!{
-                                                    <div class="drug-sale-list-item">
-                                                        <div class="drug-sale-list-item-name">
-                                                            {c.name.clone()}
-                                                        </div>
-                                                        <div class="drug-sale-list-item-money">
-                                                            {c.money.clone()}
-                                                        </div>
-                                                    </div>
-                                                }
-                                            })
-                                        }
-                                    </div>
-                                    <div class="column is-three-quarters">
-                                        <Form<Tip> form={save_one_tip}>
-                                            <FormItem label={"药品名称"} name={"name"} require={true} message={"require name!"}>
-                                                <input class="input" name="name" type="text" placeholder="药品名称" />
-                                            </FormItem>
-                                            <FormItem label={"药品数量"} name={"number"} require={true} message={"require number!"}>
-                                                <input class="input" name={"number"} type="number" placeholder="药品数量" />
-                                            </FormItem>
-                                            <FormItem label={"药品单价"} name={"money"} require={true} message={"require money!"}>
-                                                <input class="input" name="money" type="number" placeholder="药品单价" />
-                                            </FormItem>
-                                            <FormItem label={"药品总价"} name={"sale"} require={true} message={"require sale!"}>
-                                                <input class="input" name={"sale"} type="number" placeholder="药品总价" />
-                                            </FormItem>
-                                            <FormItem label={"submit"} name={"submit"} require={true} message={""}>
-                                                <div class="control">
-                                                    <button type="submit" class="button is-link">{"添加小计"}</button>
+                <header class="card-header">
+                    <p class="card-header-title">
+                        {"单笔药品清单"}
+                    </p>
+                    <button class="button is-info is-outlined">
+                        {"保存此笔交易"}
+                    </button>
+                </header>
+                <div class="card-content">
+                    <div class="content drug-card-content">
+                        <div class="columns">
+                            <div class="column drug-content-left">
+                                {"本次交易列表"}
+                                {
+                                    for tip_list.clone().iter().map(|c|{
+                                        html!{
+                                            <div class="drug-sale-list-item">
+                                                <div class="drug-sale-list-item-name">
+                                                    {c.name.clone()}
                                                 </div>
-                                            </FormItem>
-                                        </Form<Tip>>
-                                    </div>
-                                </div>
+                                                <div class="drug-sale-list-item-money">
+                                                    {c.money.clone()}
+                                                </div>
+                                            </div>
+                                        }
+                                    })
+                                }
+                            </div>
+                            <div class="column is-three-quarters">
+                                <Form<Tip> form={save_one_tip}>
+                                    <FormItem label={"药品名称"} name={"name"} require={true} message={"require name!"}>
+                                        <input class="input" name="name" type="text" placeholder="药品名称" />
+                                    </FormItem>
+                                    <FormItem label={"药品数量"} name={"number"} require={true} message={"require number!"}>
+                                        <input class="input" name={"number"} type="number" placeholder="药品数量" />
+                                    </FormItem>
+                                    <FormItem label={"药品单价"} name={"money"} require={true} message={"require money!"}>
+                                        <input class="input" name="money" type="number" placeholder="药品单价" />
+                                    </FormItem>
+                                    <FormItem label={"药品总价"} name={"sale"} require={true} message={"require sale!"}>
+                                        <input class="input" name={"sale"} type="number" placeholder="药品总价" />
+                                    </FormItem>
+                                    <FormItem label={"submit"} name={"submit"} require={true} message={""}>
+                                        <div class="control">
+                                            <button type="submit" class="button is-link">{"添加小计"}</button>
+                                        </div>
+                                    </FormItem>
+                                </Form<Tip>>
                             </div>
                         </div>
+                    </div>
+                </div>
             </div>
         </div>
     }
