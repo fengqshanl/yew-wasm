@@ -2,8 +2,11 @@ use crate::components::table::{OwnTableComponent, ColumnTrait};
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew::{html, Properties};
-use crate::components::modal::OwnModalComponent;
-use crate::components::form::{form::{Form, FormTypes},formitem::FormItem};
+use crate::components::{
+    form::{form::{Form, FormTypes},formitem::FormItem},
+    modal::OwnModalComponent,
+    input::input::Input,
+};
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties, Default, Deserialize, Serialize, Copy)]
 pub struct DrugInData {
@@ -115,47 +118,35 @@ pub fn drug_in() -> Html {
                         save={on_save.clone()}
                         cancel={on_cancel.clone()}
                     >
-                       <div class="card drug-card-bottom">
-                        <header class="card-header">
-                            <p class="card-header-title">
-                                {"单笔药品清单"}
-                            </p>
-                            <button class="button is-info is-outlined">
-                                {"保存此笔交易"}
-                            </button>
-                        </header>
-                        <div class="card-content">
-                                <div class="columns">
-                                    <div class="column drug-content-left">
-                                        {"本次交易列表"}
-                                        {
-                                            for drug_list.clone().iter().map(|c|{
-                                                html!{
-                                                    <div class="drug-sale-list-item">
-                                                        <div class="drug-sale-list-item-name">
-                                                            {c.name.clone()}
-                                                        </div>
-                                                        <div class="drug-sale-list-item-money">
-                                                            {c.money.clone()}
-                                                        </div>
-                                                    </div>
-                                                }
-                                            })
+                        <div class="columns">
+                            <div class="column drug-content-left">
+                                {"入库药品清单"}
+                                {
+                                    for drug_list.clone().iter().map(|c|{
+                                        html!{
+                                            <div class="drug-sale-list-item">
+                                                <div class="drug-sale-list-item-name">
+                                                    {c.name.clone()}
+                                                </div>
+                                                <div class="drug-sale-list-item-money">
+                                                    {c.money.clone()}
+                                                </div>
+                                            </div>
                                         }
-                                    </div>
-                                    <div class="column is-three-quarters">
-                                        <Form<Purchase> form={save_one_purchase}>
-                                            <FormItem label={"药品名称"} name={"name"} require={true} message={"require name!"}>
-                                                <input class="input" name="name" type="text" placeholder="药品名称" />
-                                            </FormItem>
-                                            <FormItem label={"药品数量"} name={"kind"} require={true} message={"require number!"}>
-                                                <input class="input" name={"number"} type="text" placeholder="药品数量" />
-                                            </FormItem>
-                                        </Form<Purchase>>
-                                    </div>
-                                </div>
+                                    })
+                                }
                             </div>
-                    </div> 
+                            <div class="column is-three-quarters">
+                                <Form<Purchase> form={save_one_purchase}>
+                                    <FormItem label={"药品名称"} name={"name"} require={true} message={"require name!"}>
+                                        <Input name={"name".to_string()} placeholder={"药品名称".to_string()} />
+                                    </FormItem>
+                                    <FormItem label={"药品数量"} name={"kind"} require={true} message={"require number!"}>
+                                        <input class="input" name={"number"} type="text" placeholder="药品数量" />
+                                    </FormItem>
+                                </Form<Purchase>>
+                            </div>
+                        </div>
                     </OwnModalComponent>
                 }
             } else {
