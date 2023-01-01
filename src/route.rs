@@ -1,6 +1,6 @@
 use pages::{
     case::case::Case, drug::drug::Drug, home::index::Home, page_not_found::PageNotFound,
-    people::index::People, setting::setting::Setting, drug_in::drug_in::DrugIn
+    people::index::People, setting::setting::Setting, purchase::drug_in::DrugIn
 };
 use yew::{html, Html};
 use yew_router::prelude::*;
@@ -19,7 +19,7 @@ pub enum Route {
     Case,
     #[at("/setting")]
     Setting,
-    #[at("/in")]
+    #[at("/purchase")]
     DrugIn,
     #[not_found]
     #[at("/404")]

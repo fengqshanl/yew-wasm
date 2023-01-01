@@ -25,7 +25,6 @@ pub struct Purchase {
     pub name: String,
     pub money: f64,
     pub number: f64,
-    pub sale: f64,
 }
 
 impl FormTypes for Purchase {
@@ -34,7 +33,6 @@ impl FormTypes for Purchase {
             "name" => self.name = value.as_string().expect("name types convert JsValue to String error"),
             "money" => self.money = value.as_string().expect("money convert error").parse::<f64>().unwrap(),
             "number" => self.number = value.as_string().expect("number convert error").parse::<f64>().unwrap(),
-            "sale" => self.sale = value.as_string().expect("sale convert error").parse::<f64>().unwrap(),
             _ => log::info!("匹配错误，无法找到对应元素")
         }
         Ok(()) 
@@ -107,9 +105,22 @@ pub fn drug_in() -> Html {
             tip_list.set(tips.to_vec());
         })
     };
-    html! {
+    html! {    
         <div class="drug-in-components">
-            <button class="button is-link drug-in-out-button" onclick={open_modal} >{"添加入库记录"}</button>
+            <nav class="navbar is-transparent">
+                <div class="navbar-brand">
+                    {"药品入库"}
+                </div>
+                <div id="navbarExampleTransparentExample" class="navbar-menu">
+                    <div class="navbar-end">
+                    <div class="navbar-item">
+                        <div class="field is-grouped">
+                            <button class="button is-link drug-in-out-button" onclick={open_modal} >{"添加入库记录"}</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </nav>
             <OwnTableComponent<DrugInData,DrugInColumn> data={(*drug_in_info).clone()} columns={columns} pagination={false} />
             { if *visible {
                 html!{
@@ -138,11 +149,14 @@ pub fn drug_in() -> Html {
                             </div>
                             <div class="column is-three-quarters">
                                 <Form<Purchase> form={save_one_purchase}>
-                                    <FormItem label={"药品名称"} name={"name"} require={true} message={"require name!"}>
+                                    <FormItem label={"名称"} name={"name"} require={true} message={"require name!"}>
                                         <Input name={"name".to_string()} placeholder={"药品名称".to_string()} />
                                     </FormItem>
-                                    <FormItem label={"药品数量"} name={"kind"} require={true} message={"require number!"}>
-                                        <input class="input" name={"number"} type="text" placeholder="药品数量" />
+                                    <FormItem label={"数量"} name={"kind"} require={true} message={"require number!"}>
+                                        <input class="input" name={"number"} type="text" placeholder="进货数量" />
+                                    </FormItem>
+                                    <FormItem label={"单价"} name={"money"} require={true} message={"require number!"}>
+                                        <input class="input" name={"number"} type="text" placeholder="药品单价" />
                                     </FormItem>
                                 </Form<Purchase>>
                             </div>
