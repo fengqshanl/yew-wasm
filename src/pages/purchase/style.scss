@@ -1,12 +1,21 @@
 .drug-in-components{
     width: 100%;
     display: flex;
-    padding: 1em;
     flex-direction: column;
     .table-header-col{
         text-align: center;
     }
     .drug-in-out-button{
       margin: 0 0 1em auto !important;
+    }
+    &-nav-bar{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 1em;
+    }
+    &-content{
+      margin-top: 6px;
+      box-shadow: 0px 0px 5px #888888;
     }
   }

@@ -5,6 +5,11 @@
   margin: 0;
   padding: 0;
 }
+html{
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
 .layout{
   height: 100vh;
   width: 100vw;
@@ -12,25 +17,27 @@
   flex-direction: column;
   overflow: hidden;
   .system-content{
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  &-left{
-    background-color: rgb(154,180,205);
-    color: white;
-    font-weight: 600;
-    font-size: 22px;
-    width: 20vw;
     display: flex;
+    width: 100vw;
+    height: 100vh;
+    &-left{
+      background-color: rgb(154,180,205);
+      color: white;
+      font-weight: 600;
+      font-size: 22px;
+      width: 20vw;
+      display: flex;
+      overflow: hidden;
+    }
+    &-right{
+      justify-content: center;
+      overflow: hidden;
+      background-color: #e0eee8;
+      padding: 6px;
+      width: 80vw;
+      display: flex;
+    }
   }
-  &-right{
-    justify-content: center;
-    background-color: #e0eee8;
-    padding: 2em;
-    width: 80vw;
-    display: flex;
-  }
-}
 }
 .top{
   display: flex;

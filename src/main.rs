@@ -30,7 +30,7 @@ impl Model {
                         </Link<Route>>
                     </li>
                     <li>
-                        <Link<Route> classes={"is-ghost"} to={Route::DrugIn}>
+                        <Link<Route> classes={"is-ghost"} to={Route::Purchase}>
                             {"药品入库"}
                         </Link<Route>>
                     </li>

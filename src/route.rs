@@ -1,6 +1,6 @@
 use pages::{
     case::case::Case, drug::drug::Drug, home::index::Home, page_not_found::PageNotFound,
-    people::index::People, setting::setting::Setting, purchase::drug_in::DrugIn
+    people::index::People, setting::setting::Setting, purchase::purchase::Purchase
 };
 use yew::{html, Html};
 use yew_router::prelude::*;
@@ -20,7 +20,7 @@ pub enum Route {
     #[at("/setting")]
     Setting,
     #[at("/purchase")]
-    DrugIn,
+    Purchase,
     #[not_found]
     #[at("/404")]
     NotFound,
@@ -30,7 +30,7 @@ pub fn switch(routes: &Route) -> Html {
     match routes.clone() {
         Route::Home => return html! { <Home /> },
         Route::People => return html! { <People /> },
-        Route::DrugIn => return html! { <DrugIn /> },
+        Route::Purchase => return html! { <Purchase /> },
         Route::Drug => return html! { <Drug /> },
         Route::Case => return html! { <Case /> },
         Route::Setting => return html! { <Setting /> },
