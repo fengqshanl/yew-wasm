@@ -1,15 +1,18 @@
 use std::rc::Rc;
-
+use yew::html::ChildrenWithProps;
 use yew::{prelude::*};
 
-pub struct ChildProps {
-    
+pub struct ChildProps; 
+
+impl Component for ChildProps {
+    type Message = ();
+    type Properties = ();
 }
 
 #[derive(Properties, Clone, PartialEq, Debug)]
 pub struct FormItemProps {
     #[prop_or_default]
-    pub children: ChildrenWithProps<(Component<Message = (),Properties = ChildProps> + 'static + Sized)>,
+    pub children: ChildrenWithProps<ChildProps>,
     pub name: String,
     pub label: String,
     pub require: bool,
