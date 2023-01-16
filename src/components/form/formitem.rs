@@ -1,5 +1,5 @@
 use std::rc::Rc;
-
+use yew::html::ChildrenWithProps;
 use yew::{prelude::*};
 
 #[derive(Properties, PartialEq)]
