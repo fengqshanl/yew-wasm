@@ -2,6 +2,7 @@ use crate::components::form::form::FormTypes;
 use crate::components::table::{ColumnTrait, OwnTableComponent};
 use gloo::console::{debug};
 use crate::components::form::{form::Form, formitem::FormItem};
+use crate::components::input::input::Input;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew::{function_component, html};
@@ -167,23 +168,21 @@ pub fn drug() -> Html {
                             <div class="column is-three-quarters">
                                 <Form<Tip> form={save_one_tip}>
                                     <FormItem label={"药品名称"} name={"name"} require={true} message={"require name!"}>
-                                        <input class="input" name="name" type="text" placeholder="药品名称" />
+                                        <Input placeholder="药品名称" />
                                     </FormItem>
                                     <FormItem label={"药品数量"} name={"number"} require={true} message={"require number!"}>
-                                        <input class="input" name={"number"} type="number" placeholder="药品数量" />
+                                        <Input placeholder="药品数量" />
                                     </FormItem>
                                     <FormItem label={"药品单价"} name={"money"} require={true} message={"require money!"}>
-                                        <input class="input" name="money" type="number" placeholder="药品单价" />
+                                        <Input placeholder="药品单价" />
                                     </FormItem>
                                     <FormItem label={"药品总价"} name={"sale"} require={true} message={"require sale!"}>
-                                        <input class="input" name={"sale"} type="number" placeholder="药品总价" />
-                                    </FormItem>
-                                    <FormItem label={"submit"} name={"submit"} require={true} message={""}>
-                                        <div class="control">
-                                            <button type="submit" class="button is-link">{"添加小计"}</button>
-                                        </div>
+                                        <Input placeholder="药品总价" />
                                     </FormItem>
                                 </Form<Tip>>
+                                <div class="control">
+                                    <button type="submit" class="button is-link">{"添加小计"}</button>
+                                </div>
                             </div>
                         </div>
                     </div>

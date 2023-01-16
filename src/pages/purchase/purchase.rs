@@ -193,13 +193,13 @@ pub fn purchase() -> Html {
                             <div class="column is-three-quarters">
                                 <Form<PurchaseType> form={save_one_purchase}>
                                     <FormItem label={"名称"} name={"name"} require={true} message={"require name!"}>
-                                        <Input name={"name".to_string()} placeholder={"药品名称".to_string()} />
+                                        <Input placeholder={"药品名称".to_string()} />
                                     </FormItem>
                                     <FormItem label={"数量"} name={"kind"} require={true} message={"require number!"}>
-                                        <input class="input" name={"number"} type="text" placeholder="进货数量" />
+                                        <Input placeholder="进货数量" />
                                     </FormItem>
                                     <FormItem label={"单价"} name={"money"} require={true} message={"require number!"}>
-                                        <input class="input" name={"number"} type="text" placeholder="药品单价" />
+                                        <Input placeholder="药品单价" />
                                     </FormItem>
                                 </Form<PurchaseType>>
                             </div>

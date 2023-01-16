@@ -3,6 +3,7 @@ use yew::prelude::*;
 
 #[derive(Properties, Clone, PartialEq, Debug)]
 pub struct InputProps {
+    #[prop_or_default]
     pub name: String,
     pub placeholder: String, 
 }
