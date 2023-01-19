@@ -1,4 +1,7 @@
+use crate::components::autofill::autofill::AutoFillOptions;
+use crate::components::input::input::ComponentType;
 use crate::components::table::{OwnTableComponent, ColumnTrait};
+use crate::pages::people::table::PeopleData;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew::{html, Properties};
@@ -17,6 +20,7 @@ pub struct DrugInData {
     pub kind: i32,
     pub in_time: String
 }
+
 #[derive(Clone, PartialEq, Debug, Deserialize)]
 pub struct DrugInColumn {
     pub title: String,
@@ -63,11 +67,15 @@ impl ColumnTrait<DrugInData> for DrugInColumn {
 
 #[function_component(Purchase)]
 pub fn purchase() -> Html {
+    let name_options: UseStateHandle<Vec<AutoFillOptions>> = use_state(Vec::default);
     let drug_info: UseStateHandle<Vec<DrugInData>> = use_state(Vec::default);
     let purchase_list: UseStateHandle<Vec<PurchaseType>> = use_state(Vec::default);
     let visible = use_state(|| false);
     let get_drug_in_data = use_async(async move {
         request::<(), Vec<DrugInData>>(reqwest::Method::GET, "/purchase".to_string(), ()).await
+    });
+    let get_drug_list = use_async(async move {
+        request::<(), Vec<PeopleData>>(reqwest::Method::GET, "/drug".to_string(), ()).await
     });
     let columns = vec![
         DrugInColumn {
@@ -146,6 +154,36 @@ pub fn purchase() -> Html {
             get_drug_in_data,
         )
     }
+    
+    {
+        let get_drug_list = get_drug_list.clone();
+        use_effect_once(move || {
+            get_drug_list.run();
+            || log::info!("Running clean-up of effect on unmount")
+        });
+    }
+
+    {
+        let name_options = name_options.clone();
+        let get_drug_list = get_drug_list.clone();
+        use_effect_with_deps(
+            move |get_drug_list| {
+                if let Some(drug_list) = &get_drug_list.data {
+                    name_options.set(
+                        drug_list
+                            .iter()
+                            .map(move |drug| AutoFillOptions {
+                                label: drug.name.clone(),
+                                options: Box::new(None)
+                            })
+                            .collect(),
+                    )
+                }
+                || ()
+            },
+            get_drug_list,
+        )
+    }
     html! {
         <div class="drug-in-components">
             <nav class="navbar is-transparent">
@@ -193,13 +231,14 @@ pub fn purchase() -> Html {
                             <div class="column is-three-quarters">
                                 <Form<PurchaseType> form={save_one_purchase}>
                                     <FormItem label={"名称"} name={"name"} require={true} message={"require name!"}>
-                                        <Input placeholder={"药品名称".to_string()} />
+                                        <Input component_type={&ComponentType::Autofill} auto_options={(*name_options).clone()} 
+                                               placeholder={"药品名称".to_string()} />
                                     </FormItem>
                                     <FormItem label={"数量"} name={"kind"} require={true} message={"require number!"}>
-                                        <Input placeholder="进货数量" />
+                                        <Input component_type={&ComponentType::Input} placeholder="进货数量" />
                                     </FormItem>
                                     <FormItem label={"单价"} name={"money"} require={true} message={"require number!"}>
-                                        <Input placeholder="药品单价" />
+                                        <Input component_type={&ComponentType::Input} placeholder="药品单价" />
                                     </FormItem>
                                 </Form<PurchaseType>>
                             </div>

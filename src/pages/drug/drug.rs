@@ -2,7 +2,7 @@ use crate::components::form::form::FormTypes;
 use crate::components::table::{ColumnTrait, OwnTableComponent};
 use gloo::console::{debug};
 use crate::components::form::{form::Form, formitem::FormItem};
-use crate::components::input::input::Input;
+use crate::components::input::input::{Input, ComponentType};
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew::{function_component, html};
@@ -168,16 +168,16 @@ pub fn drug() -> Html {
                             <div class="column is-three-quarters">
                                 <Form<Tip> form={save_one_tip}>
                                     <FormItem label={"药品名称"} name={"name"} require={true} message={"require name!"}>
-                                        <Input placeholder="药品名称" />
+                                        <Input component_type={&ComponentType::Autofill} placeholder="药品名称" />
                                     </FormItem>
                                     <FormItem label={"药品数量"} name={"number"} require={true} message={"require number!"}>
-                                        <Input placeholder="药品数量" />
+                                        <Input component_type={&ComponentType::Input} placeholder="药品数量" />
                                     </FormItem>
                                     <FormItem label={"药品单价"} name={"money"} require={true} message={"require money!"}>
-                                        <Input placeholder="药品单价" />
+                                        <Input component_type={&ComponentType::Input} placeholder="药品单价" />
                                     </FormItem>
                                     <FormItem label={"药品总价"} name={"sale"} require={true} message={"require sale!"}>
-                                        <Input placeholder="药品总价" />
+                                        <Input component_type={&ComponentType::Input} placeholder="药品总价" />
                                     </FormItem>
                                 </Form<Tip>>
                                 <div class="control">

@@ -1,3 +1,4 @@
+use crate::components::autofill::autofill::ForForm;
 use crate::components::modal::OwnModalComponent;
 use crate::components::table::{OwnTableComponent, ColumnTrait};
 use crate::ownhttp::myhttp::request;
@@ -16,6 +17,15 @@ pub struct PeopleData {
     pub matters_need_attention: String,
     pub usage_dosage: String,
     pub a_b_classify: String,
+}
+
+impl ForForm for PeopleData {
+    fn get_key(self: &PeopleData) -> &str{
+        &self.drug_id
+    }
+    fn get_name(self: &PeopleData) -> &str{
+        &self.name
+    }
 }
 
 #[derive(Clone, PartialEq, Debug)]

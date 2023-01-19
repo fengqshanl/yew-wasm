@@ -2,7 +2,9 @@ use std::rc::Rc;
 use yew::html::ChildrenWithProps;
 use yew::{prelude::*};
 
-#[derive(Properties, PartialEq)]
+use crate::components::input::input::Input;
+
+#[derive(PartialEq, Properties)]
 pub struct ChildProps {
     name: String
 }
@@ -10,7 +12,7 @@ pub struct ChildProps {
 #[derive(Properties, Clone, PartialEq, Debug)]
 pub struct FormItemProps {
     #[prop_or_default]
-    pub children: ChildrenWithProps<FunctionComponent<ChildProps>>,
+    pub children: ChildrenWithProps<Input>,
     pub name: String,
     pub label: String,
     pub require: bool,

@@ -5,10 +5,12 @@ use std::fmt::{Debug};
 use yew::prelude::*;
 use yew::{ Callback};
 
+use super::formitem::FormItem;
+
 #[derive(Properties, Clone, PartialEq, Debug)]
 pub struct FormProps<F: Properties + Clone + PartialEq + Debug + for<'de> Deserialize<'de> + FormTypes> {
     #[prop_or_default]
-    pub children: Children,
+    pub children: ChildrenWithProps<FormItem>,
     pub form: Callback<F>,
 }
 

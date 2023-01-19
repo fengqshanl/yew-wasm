@@ -1,48 +1,42 @@
 use std::{fmt::{Debug}};
 use yew::prelude::*;
 
+use crate::components::autofill::autofill::{AutoFill, AutoFillOptions};
+
+#[derive(Clone, PartialEq, Debug)]
+pub enum ComponentType {
+    Autofill, Input
+}
+
 #[derive(Properties, Clone, PartialEq, Debug)]
 pub struct InputProps {
     #[prop_or_default]
     pub name: String,
+    #[prop_or_default]
+    pub auto_options: Vec<AutoFillOptions>,
+    pub component_type: &'static ComponentType,
     pub placeholder: String, 
 }
 
 #[function_component(Input)]
 pub fn input(props: &InputProps) -> Html {
-     
-    let visible = use_state(|| false);
-    let show_autocomplete = {
-        let visible = visible.clone();
-        Callback::from(move|_|{
-            visible.set(true);
-        })
-    };
-    let hidden_autocomplete = {
-        let visible = visible.clone();
-        Callback::from(move|_|{
-            visible.set(false);
-        })
-    };
     let input = {
         Callback::from(move|e: InputEvent|{
             log::info!("input data:{:?}",e.data());
         })
     };
-    html!{
-        <div onblur={hidden_autocomplete} onfocus={show_autocomplete}>
-            <input type="text" class="input"  placeholder={props.placeholder.clone()} oninput={input} />
-            {
-                if *visible {
-                    html!{
-                        <div class="input-auto-complete">
-                            {"自动填充的显示框"}
-                        </div>
-                    }
-                }else{
-                    html!{}
-                }
+    match props.component_type {
+        ComponentType::Autofill => {
+            html!{
+                <AutoFill name={props.name.clone()} placeholder={""} options={props.auto_options.clone()} />    
             }
-        </div>
+        },
+        ComponentType::Input => {
+            html!{
+                <div>
+                    <input type="text" class="input"  placeholder={props.placeholder.clone()} oninput={input} />
+                </div>
+            }
+        }
     }
 }
