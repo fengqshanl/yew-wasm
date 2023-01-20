@@ -1,5 +1,10 @@
 use std::{fmt::{Debug, Display, self}};
+use wasm_bindgen::JsCast;
+use web_sys::{HtmlBodyElement, HtmlInputElement, HtmlDivElement};
 use yew::{prelude::*};
+use yew_hooks::{use_async};
+
+use crate::{ownhttp::myhttp::request, pages::people::table::PeopleData};
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct AutoFillOptions {
@@ -29,41 +34,73 @@ pub trait ForForm {
 #[function_component(AutoFill)]
 pub fn autofill(props: &AutoFillProps) -> Html {
     let visible = use_state(|| false);
-    let show_autocomplete = {
-        let visible = visible.clone();
-        Callback::from(move|_|{
-            visible.set(true);
+    let fill_list: UseStateHandle<Vec<AutoFillOptions>> = use_state(Vec::default);
+    let input_value = use_state(String::default);
+    let get_data = {
+        let input_value = input_value.clone();
+        use_async(async move {
+            request::<String, Vec<PeopleData>>(reqwest::Method::PUT, "/search_drug_name".to_string(), (*input_value).clone(), true).await
         })
     };
-    let hidden_autocomplete = {
-        let visible = visible.clone();
-        Callback::from(move|_|{
-            visible.set(false);
-        })
-    };
+    {
+        let get_data = get_data.clone();
+        let fill_list = fill_list.clone();
+        use_effect_with_deps(move|data|{
+            if let Some(list) = &data.data {
+                fill_list.set(
+                    list
+                        .iter()
+                        .map(move |drug| AutoFillOptions {
+                            label: drug.name.clone(),
+                            options: Box::new(None)
+                        })
+                        .collect()
+                )
+            } || ()
+        }, get_data)
+    }
     let input = {
+        let input_value = input_value.clone();
+        let visible = visible.clone();
         Callback::from(move|e: InputEvent|{
-            log::info!("input data:{:?}",e.data());
+            visible.set(true);
+            let input: HtmlInputElement = e.target_unchecked_into();
+            input_value.set(input.value());
+            get_data.run();
         })
     };
-    log::info!("value: {:?}", props.options);
-
     html!{
-        <div onblur={hidden_autocomplete} onfocus={show_autocomplete}>
-            <input type="text" class="input"  placeholder={props.placeholder.clone()} oninput={input} />
+        <div>
+            <input type="text" class="input" name={props.name.clone()} placeholder={props.placeholder.clone()} oninput={input} value={(*input_value).clone()}  />
             {
                 if *visible {
-                    let chose = {
-                        Callback::from(move|e: MouseEvent|{
-                            log::info!("click target {:?}", e.current_target());
+                    let hidden_autocomplete_inner = {
+                        let visible = visible.clone();
+                        Callback::from(move|_|{
+                            visible.set(false);
                         })
                     };
                     html!{
-                        <div class="autofill-auto-complete" onclick={chose}>
+                        <div class="autofill-auto-complete" onblur={hidden_autocomplete_inner}>
                             {
-                                for props.options.iter().map(|value|{
+                                for (*fill_list).clone().iter().map(|value|{
+                                    let chose_element = {
+                                        let input_value = input_value.clone();
+                                        let visible = visible.clone();
+                                        Callback::from(move|e: MouseEvent|{
+                                            let target = e.target();
+                                            match target {
+                                                Some(target) => {
+                                                    let target: HtmlDivElement = target.unchecked_into::<HtmlDivElement>();
+                                                    input_value.set(target.inner_text());
+                                                },
+                                                _ => {}
+                                            };
+                                            visible.set(false)
+                                        })
+                                    };
                                     html!{
-                                        <div class="autofill-auto-complete-row">
+                                        <div class="autofill-auto-complete-row" onclick={chose_element}>
                                             {value.label.clone()}
                                         </div>
                                     }

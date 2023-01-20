@@ -4,12 +4,12 @@ use serde::{de::DeserializeOwned, Serialize};
 // const API_ROOT: String = String::from("localhost:9876");
 
 /// build all kinds of http request: post/get/delete etc.
-pub async fn request<B, T>(method: reqwest::Method, url: String, body: B) -> Result<T, Error>
+pub async fn request<B, T>(method: reqwest::Method, url: String, body: B, allow: bool) -> Result<T, Error>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug,
     B: Serialize + std::fmt::Debug,
 {
-    let allow_body = method == reqwest::Method::POST || method == reqwest::Method::PUT;
+    let allow_body = method == reqwest::Method::POST || method == reqwest::Method::PUT || allow;
     let url = format!("{}{}", String::from("http://127.0.0.1:9876"), url);
     let mut builder = reqwest::Client::new()
         .request(method, url)

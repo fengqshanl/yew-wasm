@@ -5,7 +5,7 @@ use crate::components::autofill::autofill::{AutoFill, AutoFillOptions};
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum ComponentType {
-    Autofill, Input
+    Autofill, Input, Submit
 }
 
 #[derive(Properties, Clone, PartialEq, Debug)]
@@ -15,6 +15,7 @@ pub struct InputProps {
     #[prop_or_default]
     pub auto_options: Vec<AutoFillOptions>,
     pub component_type: &'static ComponentType,
+    #[prop_or_default]
     pub placeholder: String, 
 }
 
@@ -34,7 +35,15 @@ pub fn input(props: &InputProps) -> Html {
         ComponentType::Input => {
             html!{
                 <div>
-                    <input type="text" class="input"  placeholder={props.placeholder.clone()} oninput={input} />
+                    <input type="text" class="input" name={props.name.clone()} placeholder={props.placeholder.clone()} oninput={input} />
+                </div>
+            }
+        },
+        ComponentType::Submit => {
+            log::info!("props{:?}", props);
+            html!{
+                <div>
+                    <button class="button is-success" type={"submit"}>{props.name.clone()}</button>
                 </div>
             }
         }

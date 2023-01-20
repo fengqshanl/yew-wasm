@@ -13,9 +13,13 @@ pub struct ChildProps {
 pub struct FormItemProps {
     #[prop_or_default]
     pub children: ChildrenWithProps<Input>,
+    #[prop_or_default]
     pub name: String,
+    #[prop_or_default]
     pub label: String,
+    #[prop_or_default]
     pub require: bool,
+    #[prop_or_default]
     pub message: String,
 }
 
@@ -29,7 +33,7 @@ pub fn form_item(props: &FormItemProps) -> Html {
                 child_props.name = props.name.clone();
                 item
             })}
-            <p class="help is-success">{props.message.clone()}</p>
+            // <p class="help is-success">{props.message.clone()}</p>
         </div>
     }
 }

@@ -1,81 +1,27 @@
 use crate::components::autofill::autofill::AutoFillOptions;
 use crate::components::input::input::ComponentType;
-use crate::components::table::{OwnTableComponent, ColumnTrait};
-use crate::pages::people::table::PeopleData;
-use serde::{Deserialize, Serialize};
+use crate::components::table::{OwnTableComponent};
 use yew::prelude::*;
-use yew::{html, Properties};
+use yew::{html};
 use crate::ownhttp::myhttp::request;
 use yew_hooks::{use_async, use_effect_once};
 use crate::components::{
-    form::{form::{Form, FormTypes},formitem::FormItem},
+    form::{form::{Form},formitem::FormItem},
     modal::OwnModalComponent,
     input::input::Input,
 };
 
-#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
-pub struct DrugInData {
-    pub per_id: String,
-    pub money: f32,
-    pub kind: i32,
-    pub in_time: String
-}
-
-#[derive(Clone, PartialEq, Debug, Deserialize)]
-pub struct DrugInColumn {
-    pub title: String,
-    pub data_index: String
-}
-
-#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
-pub struct PurchaseType {
-    pub name: String,
-    pub money: f64,
-    pub number: f64,
-}
-
-impl FormTypes for PurchaseType {
-    fn try_set(&mut self, name: &str, value: wasm_bindgen::JsValue) -> Result<(), std::io::Error>{
-         match name {
-            "name" => self.name = value.as_string().expect("name types convert JsValue to String error"),
-            "money" => self.money = value.as_string().expect("money convert error").parse::<f64>().unwrap(),
-            "number" => self.number = value.as_string().expect("number convert error").parse::<f64>().unwrap(),
-            _ => log::info!("匹配错误，无法找到对应元素")
-        }
-        Ok(()) 
-    }
-}
-
-impl ColumnTrait<DrugInData> for DrugInColumn {
-    fn render(&self, value: String, record: &DrugInData, index: usize) -> Html {
-        match &value as &str {
-            "index" => return html!{{index + 1}},
-            "money" => return html!{{&record.money}},
-            "kind" => return html!{{&record.kind}},
-            "in_time" => return html!{{&record.in_time}},
-            "detail" => return html!{<button class="button is-link is-outlined">{"采购详情"}</button>},
-            _ => html!{}
-        }
-    }
-    fn title(&self) -> String{
-        self.title.clone()
-    }
-    fn data_index(&self) -> String {
-        self.data_index.clone()
-    }
-}
+use super::models::{DrugInData, PurchaseType, DrugInColumn, PurchaseInColumn};
 
 #[function_component(Purchase)]
 pub fn purchase() -> Html {
     let name_options: UseStateHandle<Vec<AutoFillOptions>> = use_state(Vec::default);
     let drug_info: UseStateHandle<Vec<DrugInData>> = use_state(Vec::default);
     let purchase_list: UseStateHandle<Vec<PurchaseType>> = use_state(Vec::default);
+    let purchase: UseStateHandle<PurchaseType> = use_state(PurchaseType::default);
     let visible = use_state(|| false);
     let get_drug_in_data = use_async(async move {
-        request::<(), Vec<DrugInData>>(reqwest::Method::GET, "/purchase".to_string(), ()).await
-    });
-    let get_drug_list = use_async(async move {
-        request::<(), Vec<PeopleData>>(reqwest::Method::GET, "/drug".to_string(), ()).await
+        request::<(), Vec<DrugInData>>(reqwest::Method::GET, "/purchase".to_string(), (), false).await
     });
     let columns = vec![
         DrugInColumn {
@@ -97,6 +43,28 @@ pub fn purchase() -> Html {
         DrugInColumn {
             title: "采购详情".to_string(),
             data_index: "detail".to_string(),
+        },
+    ];
+    let purchase_columns = vec![
+        PurchaseInColumn{ 
+            title: "序号".to_string(), 
+            data_index: "index".to_string() 
+        },
+        PurchaseInColumn{ 
+            title: "药品名称".to_string(), 
+            data_index: "name".to_string() 
+        },
+        PurchaseInColumn{ 
+            title: "售价".to_string(), 
+            data_index: "sale_money".to_string() 
+        },
+        PurchaseInColumn{ 
+            title: "进价".to_string(), 
+            data_index: "self_money".to_string() 
+        },
+        PurchaseInColumn{ 
+            title: "数量".to_string(), 
+            data_index: "number".to_string() 
         },
     ];
     let on_save = {
@@ -154,36 +122,6 @@ pub fn purchase() -> Html {
             get_drug_in_data,
         )
     }
-    
-    {
-        let get_drug_list = get_drug_list.clone();
-        use_effect_once(move || {
-            get_drug_list.run();
-            || log::info!("Running clean-up of effect on unmount")
-        });
-    }
-
-    {
-        let name_options = name_options.clone();
-        let get_drug_list = get_drug_list.clone();
-        use_effect_with_deps(
-            move |get_drug_list| {
-                if let Some(drug_list) = &get_drug_list.data {
-                    name_options.set(
-                        drug_list
-                            .iter()
-                            .map(move |drug| AutoFillOptions {
-                                label: drug.name.clone(),
-                                options: Box::new(None)
-                            })
-                            .collect(),
-                    )
-                }
-                || ()
-            },
-            get_drug_list,
-        )
-    }
     html! {
         <div class="drug-in-components">
             <nav class="navbar is-transparent">
@@ -213,32 +151,25 @@ pub fn purchase() -> Html {
                         <div class="columns">
                             <div class="column drug-content-left">
                                 {"入库药品清单"}
-                                {
-                                    for purchase_list.clone().iter().map(|c|{
-                                        html!{
-                                            <div class="drug-sale-list-item">
-                                                <div class="drug-sale-list-item-name">
-                                                    {c.name.clone()}
-                                                </div>
-                                                <div class="drug-sale-list-item-money">
-                                                    {c.money.clone()}
-                                                </div>
-                                            </div>
-                                        }
-                                    })
-                                }
+                                <OwnTableComponent<PurchaseType,PurchaseInColumn> data={(*purchase_list).clone()} columns={purchase_columns} pagination={false} />
                             </div>
-                            <div class="column is-three-quarters">
+                            <div class="column is-half">
                                 <Form<PurchaseType> form={save_one_purchase}>
                                     <FormItem label={"名称"} name={"name"} require={true} message={"require name!"}>
                                         <Input component_type={&ComponentType::Autofill} auto_options={(*name_options).clone()} 
                                                placeholder={"药品名称".to_string()} />
                                     </FormItem>
-                                    <FormItem label={"数量"} name={"kind"} require={true} message={"require number!"}>
+                                    <FormItem label={"数量"} name={"number"} require={true} message={"require number!"}>
                                         <Input component_type={&ComponentType::Input} placeholder="进货数量" />
                                     </FormItem>
-                                    <FormItem label={"单价"} name={"money"} require={true} message={"require number!"}>
-                                        <Input component_type={&ComponentType::Input} placeholder="药品单价" />
+                                    <FormItem label={"进价"} name={"self_money"} require={true} message={"require number!"}>
+                                        <Input component_type={&ComponentType::Input} placeholder="药品进价" />
+                                    </FormItem>
+                                    <FormItem label={"售价"} name={"sale_money"} require={true} message={"require number!"}>
+                                        <Input component_type={&ComponentType::Input} placeholder="药品售价" />
+                                    </FormItem>
+                                    <FormItem name={"药品入单"}>
+                                        <Input component_type={&ComponentType::Submit} />
                                     </FormItem>
                                 </Form<PurchaseType>>
                             </div>

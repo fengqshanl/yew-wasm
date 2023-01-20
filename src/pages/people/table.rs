@@ -100,7 +100,7 @@ pub fn drug_table() -> Html {
     ];
     let visible: UseStateHandle<bool> = use_state(bool::default);
     let drug_info = use_async(async move {
-        request::<(), Vec<PeopleData>>(reqwest::Method::GET, "/drug".to_string(), ()).await
+        request::<(), Vec<PeopleData>>(reqwest::Method::GET, "/drug".to_string(), (), false).await
     });
 
     let onclick = {
