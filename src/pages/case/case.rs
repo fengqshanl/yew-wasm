@@ -16,7 +16,7 @@ pub struct CaseColumn {
 }
 
 impl ColumnTrait<CaseData> for CaseColumn {
-    fn render(&self, value: String, record: &CaseData, index: usize) -> Html {
+    fn render(&self, value: String, record: &CaseData, index: usize, handler: Option<Callback<CaseData>>) -> Html {
         match &value as &str {
             "index" => return html!{{index + 1}},
             "name" => return html!{{&record.name}},

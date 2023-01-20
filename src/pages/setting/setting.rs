@@ -13,7 +13,7 @@ pub struct SetColumn {
 }
 
 impl ColumnTrait<SetData> for SetColumn {
-    fn render(&self, value: String, _record: &SetData, index: usize) -> Html {
+    fn render(&self, value: String, _record: &SetData, index: usize, handler: Option<Callback<SetData>>) -> Html {
         match &value as &str {
             "index" => return html!{{index}},
             "name" => return html!{{"药品名称"}},

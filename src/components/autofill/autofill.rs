@@ -63,10 +63,12 @@ pub fn autofill(props: &AutoFillProps) -> Html {
         let input_value = input_value.clone();
         let visible = visible.clone();
         Callback::from(move|e: InputEvent|{
-            visible.set(true);
             let input: HtmlInputElement = e.target_unchecked_into();
             input_value.set(input.value());
             get_data.run();
+            if *visible == false {
+                visible.set(true);
+            }
         })
     };
     html!{

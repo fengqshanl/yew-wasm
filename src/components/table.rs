@@ -11,10 +11,12 @@ pub struct TableProps<
     #[prop_or_default]
     pub data: Vec<D>,
     pub columns: Vec<C>,
+    pub row_click: Option<Callback<D>>,
     pub pagination: bool,
+    pub handler: Option<Callback<D>>
 }
 pub trait ColumnTrait<R> {
-    fn render(&self, value: String, record: &R, index: usize) -> Html;
+    fn render(&self, value: String, record: &R, index: usize, handler: Option<Callback<R>>) -> Html;
     fn title(&self) -> String;
     fn center(&self) -> String {
         "center".to_string()
@@ -34,13 +36,15 @@ where
     {
         let data_list = data_list.clone();
         let data_info = props.data.clone();
+        let handler = props.handler.clone();
+        let row_click = props.row_click.clone();
         let columns = props.columns.clone();
         let pagination = props.pagination.clone();
         let whole_list = whole_list.clone();
         let p_c = p_c.clone();
         use_effect_with_deps(
             move |data_info| {
-                let mut data_li = (*data_list).clone();
+                let mut data_li = vec![];
                 *whole_list.borrow_mut() = data_info.clone();
                 let mut size = data_info.len();
                 if pagination && (size > p_c.size) {
@@ -48,21 +52,36 @@ where
                 }
                 if data_info.len() > 0 {
                     for (index, row) in (data_info.clone()[0..size]).iter().enumerate() {
-                            let html = html! {
-                                <tr>
-                                    {
-                                        for columns.clone().iter().map(|col|{
-                                            html!{
-                                                <th>
-                                                    {col.clone().render(col.clone().data_index(), row, index)}
-                                                </th>
-                                            }
-                                        })
-                                    }
-                                </tr>
-                            };
-                            data_li.push(html);
+                        // TODO 优化事件监听
+                        let click_row = {
+                            let row = row.clone();
+                            let row_click = row_click.clone();
+                            Callback::from(move|_|{
+                                match row_click.clone() {
+                                    Some(row_click) => {
+                                        row_click.emit(row.clone());
+                                    },
+                                    _ => {}
+                                }
+                            })
+                        };
+                        let html = html! {
+                            <tr onclick={click_row}>
+                                {
+                                    for columns.clone().iter().map(|col|{
+                                        html!{
+                                            <th>
+                                                {col.clone().render(col.clone().data_index(), row, index, handler.clone())}
+                                            </th>
+                                        }
+                                    })
+                                }
+                            </tr>
+                        };
+                        data_li.push(html);
                     }; 
+                    data_list.set(data_li);
+                }else{
                     data_list.set(data_li);
                 }
                 || log::info!("table component render error!")
@@ -73,6 +92,7 @@ where
     let page_change = {
         let data_list = data_list.clone();
         let columns = props.columns.clone();
+        let handler = props.handler.clone();
         let whole_list = whole_list.clone();
         let p_c = p_c.clone();
         Callback::from(move |index: usize|{
@@ -86,7 +106,7 @@ where
                             for columns.clone().iter().map(|col|{
                                 html!{
                                     <th>
-                                        {col.clone().render(col.clone().data_index(), row, index)}
+                                        {col.clone().render(col.clone().data_index(), row, index, handler.clone())}
                                     </th>
                                 }
                             })

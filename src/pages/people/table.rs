@@ -35,7 +35,7 @@ pub struct PeopleColumn {
 }
 
 impl ColumnTrait<PeopleData> for PeopleColumn {
-    fn render(&self, value: String, record: &PeopleData, index: usize) -> Html {
+    fn render(&self, value: String, record: &PeopleData, index: usize, handler: Option<Callback<PeopleData>>) -> Html {
         match &value as &str {
             "index" => return html!{{index + 1}},
             "drug_name" => return html!{{&record.name}},

@@ -18,7 +18,7 @@ pub struct DrugColumn {
 }
 
 impl ColumnTrait<DrugData> for DrugColumn {
-    fn render(&self, value: String, record: &DrugData, index: usize) -> Html {
+    fn render(&self, value: String, record: &DrugData, index: usize, handler: Option<Callback<DrugData>>) -> Html {
         if index == 0 {
             match &value as &str {
                 "index" => return html! {{index + 1}},
