@@ -41,7 +41,8 @@ pub fn purchase() -> Html {
                 detail: (*purchase_list).clone(),
                 in_time: now.to_string()
             };
-            request::<BKPurchase, Vec<DrugInData>>(reqwest::Method::GET, "/purchase".to_string(), tar, false).await
+            log::info!("tar: {:?}", tar);
+            request::<BKPurchase, Vec<DrugInData>>(reqwest::Method::POST, "/purchase".to_string(), tar, false).await
     })};
     let columns = vec![
         DrugInColumn {
