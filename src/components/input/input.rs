@@ -40,7 +40,6 @@ pub fn input(props: &InputProps) -> Html {
             }
         },
         ComponentType::Submit => {
-            log::info!("props{:?}", props);
             html!{
                 <div>
                     <button class="button is-success" type={"submit"}>{props.name.clone()}</button>

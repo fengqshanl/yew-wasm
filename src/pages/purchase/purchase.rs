@@ -20,6 +20,7 @@ use super::models::{DrugInData, PurchaseType, DrugInColumn, PurchaseInColumn};
 pub fn purchase() -> Html {
     let name_options: UseStateHandle<Vec<AutoFillOptions>> = use_state(Vec::default);
     let drug_info: UseStateHandle<Vec<DrugInData>> = use_state(Vec::default);
+    let loading = use_state(|| false);
     let purchase_list: UseStateHandle<Vec<PurchaseType>> = use_state(Vec::default);
     let visible = use_state(|| false);
     let get_drug_in_data = use_async(async move {
@@ -172,7 +173,7 @@ pub fn purchase() -> Html {
                     <div class="navbar-end">
                     <div class="navbar-item">
                         <div class="field is-grouped">
-                            <button class="button is-link drug-in-out-button" onclick={open_modal} >{"添加入库记录"}</button>
+                            <button class="button is-link drug-in-out-button is-small" onclick={open_modal} >{"添加入库记录"}</button>
                         </div>
                     </div>
                     </div>

@@ -24,7 +24,7 @@ pub fn modal(props: &ModalProps) -> Html {
                     {props.children.clone()}
                 </section>
                 <footer class="modal-card-foot">
-                    <button class="button is-success"  onclick={props.save.clone()}>{"入库"}</button>
+                    <button class="button is-success"  onclick={props.save.clone()}>{"确定"}</button>
                     <button class="button" onclick={props.cancel.clone()}>{"取消"}</button>
                 </footer>
             </div>

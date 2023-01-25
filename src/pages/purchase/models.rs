@@ -88,7 +88,7 @@ impl ColumnTrait<DrugInData> for DrugInColumn {
             "money" => return html!{{&record.money}},
             "kind" => return html!{{&record.kind}},
             "in_time" => return html!{{&record.in_time}},
-            "detail" => return html!{<button class="button is-link is-outlined">{"采购详情"}</button>},
+            "detail" => return html!{<button class="button is-link is-outlined is-small">{"采购详情"}</button>},
             _ => html!{}
         }
     }
