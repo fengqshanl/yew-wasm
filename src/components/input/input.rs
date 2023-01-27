@@ -21,11 +21,6 @@ pub struct InputProps {
 
 #[function_component(Input)]
 pub fn input(props: &InputProps) -> Html {
-    let input = {
-        Callback::from(move|e: InputEvent|{
-            log::info!("input data:{:?}",e.data());
-        })
-    };
     match props.component_type {
         ComponentType::Autofill => {
             html!{
@@ -35,7 +30,7 @@ pub fn input(props: &InputProps) -> Html {
         ComponentType::Input => {
             html!{
                 <div>
-                    <input type="text" class="input" name={props.name.clone()} placeholder={props.placeholder.clone()} oninput={input} />
+                    <input type="text" class="input" name={props.name.clone()} placeholder={props.placeholder.clone()} />
                 </div>
             }
         },

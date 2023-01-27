@@ -4,11 +4,12 @@ use web_sys::{HtmlBodyElement, HtmlInputElement, HtmlDivElement};
 use yew::{prelude::*};
 use yew_hooks::{use_async};
 
-use crate::{ownhttp::myhttp::request, pages::people::table::PeopleData};
+use crate::{ownhttp::myhttp::request, pages::{people::table::PeopleData, drug}};
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct AutoFillOptions {
     pub label: String,
+    pub key: String,
     pub options: Box<Option<Vec<AutoFillOptions>>>
 }
 
@@ -31,6 +32,7 @@ pub trait ForForm {
     fn get_name(&self) -> &str;
 }
 
+// TODO 虚拟列表
 #[function_component(AutoFill)]
 pub fn autofill(props: &AutoFillProps) -> Html {
     let visible = use_state(|| false);
@@ -52,6 +54,7 @@ pub fn autofill(props: &AutoFillProps) -> Html {
                         .iter()
                         .map(move |drug| AutoFillOptions {
                             label: drug.name.clone(),
+                            key: drug.drug_id.clone(),
                             options: Box::new(None)
                         })
                         .collect()

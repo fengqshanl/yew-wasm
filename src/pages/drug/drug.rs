@@ -3,9 +3,10 @@ use crate::components::form::{form::Form, formitem::FormItem};
 use crate::components::input::input::{Input, ComponentType};
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
+use sp_yew::uuid::Uuid;
 use crate::ownhttp::myhttp::request;
 use crate::components::modal::OwnModalComponent;
-use super::model::{DrugColumn, DrugData, Tip, Sale};
+use super::model::{DrugColumn, DrugData, Tip, Sale, TipColumn};
 use yew::{function_component, html};
 use yew_hooks::use_async;
 use yew_hooks::{use_effect_once};
@@ -54,12 +55,31 @@ pub fn drug() -> Html {
     }
     let save_one_tip = {
         let tip_list = tip_list.clone();
-        Callback::from(move |sale: Tip| {
+        Callback::from(move |mut sale: Tip| {
             let mut tips = (*tip_list).clone();
+            sale.id = Uuid::new_v4();
             tips.push(sale);
             tip_list.set(tips.to_vec());
         })
     };
+    let save_tip = {
+        let purchase_list = purchase_list.clone();
+        use_async(async move {
+            let mut money: f32 = 0.0;
+            for row in (*purchase_list).iter() {
+                money = money + row.self_money;
+            }; 
+            let fmt = "%Y年%m月%d日 %H:%M:%S";
+            let now = Local::now().format(fmt);
+            let tar = BKPurchase{
+                per_id: Uuid::new_v4().to_string(),
+                kind: (*purchase_list).len().try_into().expect("msg"),
+                money: money.into(),
+                detail: (*purchase_list).clone(),
+                in_time: now.to_string()
+            };
+            request::<BKPurchase, Vec<DrugInData>>(reqwest::Method::POST, "/purchase".to_string(), tar, false).await
+    })};
     {
         let case_info = case_info.clone();
         let drug_info = drug_info.clone();
@@ -84,8 +104,9 @@ pub fn drug() -> Html {
         },drug_info);
     }
     let on_save = {
+        let save_tip = save_tip.clone();
         Callback::from(move|da|{
-
+            save_tip.run();
         })
     };
     let on_cancel = {
@@ -98,6 +119,21 @@ pub fn drug() -> Html {
         let visible = visible.clone();
         Callback::from(move|_|{
             visible.set(true);
+        })
+    };
+    let tip_columns = vec![
+        TipColumn{ title: "药品名称".to_string(), data_index: "name".to_string() },
+        TipColumn{ title: "数量".to_string(), data_index: "number".to_string() },
+        TipColumn{ title: "总价".to_string(), data_index: "sale".to_string()},
+        TipColumn{ title: "操作".to_string(), data_index: "detail".to_string()},
+    ];
+    let tip_handler = {
+        let tip_list = tip_list.clone();
+        Callback::from(move|tip: Tip|{
+            let tar = (*tip_list).clone()
+                        .into_iter()
+                        .filter(|da| da.id != tip.id).collect::<Vec<Tip>>();
+            tip_list.set(tar);
         })
     };
     html! {
@@ -124,20 +160,7 @@ pub fn drug() -> Html {
                                     <div class="columns">
                                         <div class="column drug-content-left">
                                             {"本次交易列表"}
-                                            {
-                                                for tip_list.clone().iter().map(|c|{
-                                                    html!{
-                                                        <div class="drug-sale-list-item">
-                                                            <div class="drug-sale-list-item-name">
-                                                                {c.name.clone()}
-                                                            </div>
-                                                            <div class="drug-sale-list-item-money">
-                                                                {c.money.clone()}
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                })
-                                            }
+                                            <OwnTableComponent<Tip, TipColumn> data={(*tip_list).clone()} columns={tip_columns} pagination={false} handler={tip_handler} />   
                                         </div>
                                         <div class="column is-half">
                                             <Form<Tip> form={save_one_tip}>
