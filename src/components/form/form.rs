@@ -31,7 +31,7 @@ pub fn form<F: Properties + Clone + Default + PartialEq + Debug + for<'de> Deser
             ).expect("create FormData failed");
             // 通过 props 获得传入的校验规则
             for component in  props.children.iter() {
-                log::info!("name:{}", component.props.name);
+                log::info!("name:{:?}", component);
                 // 对输入的值进行校验
                 form_data.try_set(&component.props.name, form.get(&component.props.name)).expect("set err");
             };

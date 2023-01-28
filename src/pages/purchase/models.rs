@@ -69,7 +69,6 @@ impl ColumnTrait<PurchaseType> for PurchaseInColumn {
 
 impl FormTypes for PurchaseType {
     fn try_set(&mut self, name: &str, value: wasm_bindgen::JsValue) -> Result<(), std::io::Error>{
-        log::info!("value: {:?}", value);
          match name {
             "name" => self.name = value.as_string().expect("name types convert JsValue to String error"),
             "sale_money" => self.sale_money = value.as_string().expect("money convert error").parse::<f32>().unwrap(),

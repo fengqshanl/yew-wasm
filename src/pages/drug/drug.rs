@@ -4,6 +4,9 @@ use crate::components::input::input::{Input, ComponentType};
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use sp_yew::uuid::Uuid;
+use chrono::Local;
+use crate::back::purchase::BKPurchase;
+use crate::pages::purchase::models::DrugInData;
 use crate::ownhttp::myhttp::request;
 use crate::components::modal::OwnModalComponent;
 use super::model::{DrugColumn, DrugData, Tip, Sale, TipColumn};
@@ -15,6 +18,7 @@ use yew_hooks::{use_effect_once};
 pub fn drug() -> Html {
     let case_info: UseStateHandle<Vec<Sale>> = use_state(Vec::default);
     let visible = use_state(|| false);
+    let id = use_state(String::default);
     let tip_list: UseStateHandle<Vec<Tip>> = use_state(Vec::default);
     let columns = vec![
         DrugColumn {
@@ -49,42 +53,34 @@ pub fn drug() -> Html {
         let drug_info = drug_info.clone();
         use_effect_once(move || {
             // 查询今日的销售情况
+            log::info!("run");
             drug_info.run();
             || log::info!("获取销售列表错误")
         });
     }
     let save_one_tip = {
         let tip_list = tip_list.clone();
+        let id = id.clone();
         Callback::from(move |mut sale: Tip| {
             let mut tips = (*tip_list).clone();
             sale.id = Uuid::new_v4();
+            sale.drug_id = (*id).clone();
             tips.push(sale);
             tip_list.set(tips.to_vec());
         })
     };
     let save_tip = {
-        let purchase_list = purchase_list.clone();
+        let tips = tip_list.clone();
         use_async(async move {
-            let mut money: f32 = 0.0;
-            for row in (*purchase_list).iter() {
-                money = money + row.self_money;
-            }; 
-            let fmt = "%Y年%m月%d日 %H:%M:%S";
-            let now = Local::now().format(fmt);
-            let tar = BKPurchase{
-                per_id: Uuid::new_v4().to_string(),
-                kind: (*purchase_list).len().try_into().expect("msg"),
-                money: money.into(),
-                detail: (*purchase_list).clone(),
-                in_time: now.to_string()
-            };
-            request::<BKPurchase, Vec<DrugInData>>(reqwest::Method::POST, "/purchase".to_string(), tar, false).await
+            request::<Vec<Tip>, ()>(reqwest::Method::POST, "/sale".to_string(), (*tips).clone(), false).await
     })};
     {
         let case_info = case_info.clone();
         let drug_info = drug_info.clone();
         use_effect_with_deps(move |sale_list| {
+            log::info!("sale list :{:?}", *case_info);
             if let Some(sale) = &sale_list.data {
+                log::info!("sale : {:?}", sale);
                 case_info.set(
                     sale
                         .iter()
@@ -92,9 +88,9 @@ pub fn drug() -> Html {
                             sale_id: sale_info.sale_id.to_string(),
                             drug_id: sale_info.drug_id.to_string(),
                             drug_name: sale_info.drug_name.to_string(),
-                            sale_number: sale_info.sale_number.to_string(),
-                            money: sale_info.money.to_string(),
-                            total: sale_info.total.to_string(),
+                            sale_number: sale_info.sale_number,
+                            money: sale_info.money,
+                            total: sale_info.total,
                             sale_time: sale_info.sale_time.to_string(),
                         })
                         .collect(),
@@ -105,8 +101,12 @@ pub fn drug() -> Html {
     }
     let on_save = {
         let save_tip = save_tip.clone();
+        let visible = visible.clone();
+        let drug_info = drug_info.clone();
         Callback::from(move|da|{
             save_tip.run();
+            visible.set(false);
+            drug_info.run();
         })
     };
     let on_cancel = {
@@ -165,7 +165,7 @@ pub fn drug() -> Html {
                                         <div class="column is-half">
                                             <Form<Tip> form={save_one_tip}>
                                                 <FormItem label={"药品名称"} name={"name"} require={true} message={"require name!"}>
-                                                    <Input component_type={&ComponentType::Autofill} placeholder="药品名称" />
+                                                    <Input handler={id.clone()} component_type={&ComponentType::Autofill} placeholder="药品名称" />
                                                 </FormItem>
                                                 <FormItem label={"药品数量"} name={"number"} require={true} message={"require number!"}>
                                                     <Input component_type={&ComponentType::Input} placeholder="药品数量" />

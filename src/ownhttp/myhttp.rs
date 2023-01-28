@@ -20,7 +20,9 @@ where
     let response = builder.send().await;
     if let Ok(data) = response {
         if data.status().is_success() {
+            log::info!("data: {:?}", data);
             let data: Result<T, _> = data.json::<T>().await;
+            log::info!("data: {:?}", data);
             if let Ok(data) = data {
                 Ok(data)
             } else {

@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use sp_yew::uuid::Uuid;
 use yew::{html, Properties};
+use crate::pages::purchase::models::DrugInData;
 use crate::components::{table::ColumnTrait, form::form::FormTypes};
 
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
@@ -17,9 +18,9 @@ pub struct Sale {
     pub sale_id: String,
     pub drug_id: String,
     pub drug_name: String,
-    pub sale_number: String,
-    pub money: String,
-    pub total: String,
+    pub sale_number: f64,
+    pub money: f64,
+    pub total: f64,
     pub sale_time: String,
 }
 
@@ -29,23 +30,15 @@ impl FormTypes for Sale {
             "sale_id" => self.sale_id = value.as_string().expect("name types convert JsValue to String error"),
             "drug_id" => self.drug_id = value.as_string().expect("money convert error"),
             "drug_name" => self.drug_name = value.as_string().expect("number convert error"),
-            "sale_number" => self.sale_number = value.as_string().expect("sale convert error"),
-            "money" => self.money = value.as_string().expect("sale convert error"),
-            "total" => self.total = value.as_string().expect("sale convert error"),
+            "sale_number" => self.sale_number = value.as_string().expect("money convert error").parse::<f64>().unwrap(),
+            "money" => self.money = value.as_string().expect("money convert error").parse::<f64>().unwrap(),
+            "total" => self.total = value.as_string().expect("money convert error").parse::<f64>().unwrap(),
             "sale_time" => self.sale_time = value.as_string().expect("sale convert error"),
             _ => log::info!("匹配错误，无法找到对应元素")
         }
         Ok(()) 
     }
 }
-
-    // pub sale_id: String,
-    // pub drug_id: String,
-    // pub drug_name: String,
-    // pub sale_number: String,
-    // pub money: String,
-    // pub total: String,
-    // pub sale_time: String,
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct DrugColumn {
@@ -79,6 +72,7 @@ impl ColumnTrait<Sale> for DrugColumn {
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
 pub struct Tip {
     pub id: Uuid,
+    pub drug_id: String,
     pub name: String,
     pub money: f64,
     pub number: f64,

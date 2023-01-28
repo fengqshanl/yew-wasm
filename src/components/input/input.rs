@@ -14,6 +14,7 @@ pub struct InputProps {
     pub name: String,
     #[prop_or_default]
     pub auto_options: Vec<AutoFillOptions>,
+    pub handler: Option<UseStateHandle<String>>,
     pub component_type: &'static ComponentType,
     #[prop_or_default]
     pub placeholder: String, 
@@ -24,7 +25,7 @@ pub fn input(props: &InputProps) -> Html {
     match props.component_type {
         ComponentType::Autofill => {
             html!{
-                <AutoFill name={props.name.clone()} placeholder={""} options={props.auto_options.clone()} />    
+                <AutoFill name={props.name.clone()} id={props.handler.clone()} placeholder={""} options={props.auto_options.clone()} />    
             }
         },
         ComponentType::Input => {
