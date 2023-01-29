@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use sp_yew::uuid::Uuid;
 use yew::{html, Properties};
+use chrono::prelude::*;
 use crate::pages::purchase::models::DrugInData;
 use crate::components::{table::ColumnTrait, form::form::FormTypes};
 
@@ -54,7 +55,7 @@ impl ColumnTrait<Sale> for DrugColumn {
                 "number" => return html! {{&record.sale_number}},
                 "money" => return html! {{&record.money}},
                 "total" => return html!{{&record.total}},
-                "time" => return html!{{&record.sale_time}},
+                "time" => return html!{{NaiveDateTime::parse_from_str(record.sale_time.as_str(), "%Y-%m-%d %H:%M:%S%.f").expect("msg").format("%Y-%m-%d %H:%M:%S").to_string()}},
                 _ => html! {},
             }
     }

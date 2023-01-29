@@ -1817,8 +1817,23 @@ dependencies = [
  "web-sys",
  "wee_alloc",
  "yew 0.19.3",
+ "yew-chart",
  "yew-hooks",
  "yew-router",
+]
+
+[[package]]
+name = "yew-chart"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e886d189c07ccbaee21f576dce4524926a6fbacbe3f5a80746fff5ffdc436b6e"
+dependencies = [
+ "chrono",
+ "gloo-events",
+ "gloo-utils",
+ "wasm-bindgen",
+ "web-sys",
+ "yew 0.19.3",
 ]
 
 [[package]]

@@ -1,10 +1,9 @@
 extern crate yew;
 extern crate validator_derive;
-
+use chrono::prelude::*;
 use route::{switch, Route};
 use yew::prelude::*;
 use yew_router::prelude::*;
-
 mod components;
 mod dropdown;
 mod error;
@@ -42,11 +41,6 @@ impl Model {
                     <li>
                         <Link<Route> classes={"is-ghost"} to={Route::People}>
                             {"库存清单"}
-                        </Link<Route>>
-                    </li>
-                    <li>
-                        <Link<Route> classes={"is-ghost"} to={Route::Case}>
-                            {"出入库记录"}
                         </Link<Route>>
                     </li>
                     <li>

@@ -93,8 +93,13 @@ pub fn purchase() -> Html {
         },
     ];
     let on_save = {
+        let save_purchase = save_purchase.clone();
+        let visible = visible.clone();
+        let get_drug = get_drug_in_data.clone();
         Callback::from(move |_|{
             save_purchase.run();
+            visible.set(false);
+            get_drug.run();
         })
     };
     let on_cancel = {

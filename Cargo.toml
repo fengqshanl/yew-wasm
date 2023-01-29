@@ -27,6 +27,7 @@ validator = { version = "0.16.0", features = ["derive"] }
 validator_derive = "0.16.0"
 syn = { version = "1.0.105", features = ["full"]}
 sp-yew = "0.1.0"
+yew-chart = "0.5.0"
 
 [dependencies.web-sys]
 version = "0.3"

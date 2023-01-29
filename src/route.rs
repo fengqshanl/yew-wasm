@@ -1,5 +1,5 @@
 use pages::{
-    case::case::Case, drug::drug::Drug, home::index::Home, page_not_found::PageNotFound,
+    drug::drug::Drug, home::index::Home, page_not_found::PageNotFound,
     people::index::People, setting::setting::Setting, purchase::purchase::Purchase
 };
 use yew::{html, Html};
@@ -15,8 +15,6 @@ pub enum Route {
     People,
     #[at("/drug")]
     Drug,
-    #[at("/case")]
-    Case,
     #[at("/setting")]
     Setting,
     #[at("/purchase")]
@@ -32,7 +30,6 @@ pub fn switch(routes: &Route) -> Html {
         Route::People => return html! { <People /> },
         Route::Purchase => return html! { <Purchase /> },
         Route::Drug => return html! { <Drug /> },
-        Route::Case => return html! { <Case /> },
         Route::Setting => return html! { <Setting /> },
         Route::NotFound => return html! { <PageNotFound /> },
     }

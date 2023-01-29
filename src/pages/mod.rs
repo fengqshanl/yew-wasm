@@ -1,4 +1,3 @@
-pub mod case;
 pub mod drug;
 pub mod guest;
 pub mod purchase;

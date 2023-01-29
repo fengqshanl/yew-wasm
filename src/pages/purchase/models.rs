@@ -1,3 +1,5 @@
+use std::{time::SystemTime, fmt::Debug};
+use chrono::prelude::*;
 use sp_yew::uuid::Uuid;
 
 use serde::{Deserialize, Serialize};
@@ -86,7 +88,7 @@ impl ColumnTrait<DrugInData> for DrugInColumn {
             "index" => return html!{{index + 1}},
             "money" => return html!{{&record.money}},
             "kind" => return html!{{&record.kind}},
-            "in_time" => return html!{{&record.in_time}},
+            "in_time" => return html!{{NaiveDateTime::parse_from_str(record.in_time.as_str(), "%Y-%m-%d %H:%M:%S%.f").expect("msg").format("%Y-%m-%d %H:%M:%S").to_string()}},
             "detail" => return html!{<button class="button is-link is-outlined is-small">{"采购详情"}</button>},
             _ => html!{}
         }
