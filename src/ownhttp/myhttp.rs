@@ -1,4 +1,5 @@
 use crate::error::{Error, ErrorInfo};
+use reqwest::Url;
 use serde::{de::DeserializeOwned, Serialize};
 
 // const API_ROOT: String = String::from("localhost:9876");
@@ -10,9 +11,14 @@ where
     B: Serialize + std::fmt::Debug,
 {
     let allow_body = method == reqwest::Method::POST || method == reqwest::Method::PUT || allow;
-    let url = format!("{}{}", String::from("http://127.0.0.1:9876"), url);
+    let mut fin_url;
+    if method == reqwest::Method::GET {
+        fin_url = Url::parse_with_params("http://127.0.0.1:9876", &[("lang", "rust"), ("browser", "servo")]).expect("msg").as_str().to_string();
+    }else{
+        fin_url = format!("{}{}", String::from("http://127.0.0.1:9876"), url);
+    }
     let mut builder = reqwest::Client::new()
-        .request(method, url)
+        .request(method, fin_url)
         .header("Content-Type", "application/json");
     if allow_body {
         builder = builder.json(&body);

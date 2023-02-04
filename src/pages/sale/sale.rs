@@ -1,11 +1,5 @@
-use crate::components::table::{OwnTableComponent};
-use crate::components::form::{form::Form, formitem::FormItem};
-use crate::components::input::input::{Input, ComponentType};
-use serde::{Deserialize, Serialize};
 use web_sys::{FocusEvent, HtmlFormElement};
 use yew::prelude::*;
-use sp_yew::uuid::Uuid;
-use chrono::Local;
 use super::model::DrugDetail;
 use wasm_bindgen::JsCast;
 use crate::ownhttp::myhttp::request;
@@ -17,6 +11,8 @@ use yew_hooks::{use_effect_once};
 #[function_component(Sale)]
 pub fn sale() -> Html {
     let id = use_state(String::default);
+    let drug_value = use_state(DrugDetail::default);
+    let visible = use_state(|| false);
     let get_detail_by_id = {
         let id = id.clone();
         use_async(async move {
@@ -36,6 +32,16 @@ pub fn sale() -> Html {
             get_detail.run();
         })
     };
+    let on_save = {
+        Callback::from(move|e|{
+
+        })
+    };
+    let on_cancel = {
+        Callback::from(move|e|{
+
+        })
+    };
     html! {
         <div class="drug-components"> 
             <div class="drug-components-top">
@@ -47,6 +53,29 @@ pub fn sale() -> Html {
                     <button class="button is-link drug-in-out-button" >{"扫码识别"}</button>
                 </div>
             </div>
+            { if *visible {
+                html!{
+                    <OwnModalComponent
+                        name={"添加".to_string()}
+                        save={on_save.clone()}
+                        cancel={on_cancel.clone()}
+                    >
+                        <div class="card drug-card-bottom">
+                            <div class="card-content">
+                                <div class="content drug-card-content">
+                                    <div class="columns">
+                                        <div class="column is-half">
+                                            <input readonly={true} value={drug_value.name.clone()} placeholder="名称" />
+                                            <input readonly={true} value={drug_value.number.clone()} placeholder="规格" />
+                                            <input readonly={true} value={drug_value.money.clone()} placeholder="单价" />
+                                            <input placeholder="数量" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                    
+                        </div>
+                    </ OwnModalComponent>
+            }}else{html!{}}}
         </div>
     }
 }

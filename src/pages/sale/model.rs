@@ -8,7 +8,6 @@ use crate::components::{table::ColumnTrait, form::form::FormTypes};
 
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
 pub struct DrugDetail {
-    pub index: usize,
     pub name: String,
     pub number: String,
     pub money: String,
