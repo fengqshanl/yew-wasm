@@ -14,8 +14,8 @@ use yew::{function_component, html};
 use yew_hooks::use_async;
 use yew_hooks::{use_effect_once};
 
-#[function_component(Drug)]
-pub fn drug() -> Html {
+#[function_component(Login)]
+pub fn login() -> Html {
     let case_info: UseStateHandle<Vec<Sale>> = use_state(Vec::default);
     let visible = use_state(|| false);
     let id = use_state(String::default);

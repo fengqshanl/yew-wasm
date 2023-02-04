@@ -18,7 +18,7 @@ use super::models::{DrugInData, PurchaseType, DrugInColumn, PurchaseInColumn};
 
 #[function_component(Purchase)]
 pub fn purchase() -> Html {
-    let name_options: UseStateHandle<Vec<AutoFillOptions>> = use_state(Vec::default);
+    // let name_options: UseStateHandle<Vec<AutoFillOptions>> = use_state(Vec::default);
     let drug_info: UseStateHandle<Vec<DrugInData>> = use_state(Vec::default);
     let loading = use_state(|| false);
     let purchase_list: UseStateHandle<Vec<PurchaseType>> = use_state(Vec::default);
@@ -204,7 +204,7 @@ pub fn purchase() -> Html {
                             <div class="column is-half">
                                 <Form<PurchaseType> form={save_one_purchase}>
                                     <FormItem label={"名称"} name={"name"} require={true} message={"require name!"}>
-                                        <Input component_type={&ComponentType::Autofill} auto_options={(*name_options).clone()} 
+                                        <Input component_type={&ComponentType::Input}
                                                placeholder={"药品名称".to_string()} />
                                     </FormItem>
                                     <FormItem label={"数量"} name={"number"} require={true} message={"require number!"}>

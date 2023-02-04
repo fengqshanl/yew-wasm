@@ -3,6 +3,7 @@ use yew::prelude::*;
 
 use crate::components::autofill::autofill::{AutoFill, AutoFillOptions};
 
+use web_sys::HtmlInputElement;
 #[derive(Clone, PartialEq, Debug)]
 pub enum ComponentType {
     Autofill, Input, Submit
@@ -22,6 +23,12 @@ pub struct InputProps {
 
 #[function_component(Input)]
 pub fn input(props: &InputProps) -> Html {
+    let input_change = {
+        Callback::from(move|e: Event|{
+            let input: HtmlInputElement = e.target_unchecked_into();
+            log::info!("value: {}", input.value());
+        })
+    };
     match props.component_type {
         ComponentType::Autofill => {
             html!{
@@ -31,7 +38,7 @@ pub fn input(props: &InputProps) -> Html {
         ComponentType::Input => {
             html!{
                 <div>
-                    <input type="text" class="input" name={props.name.clone()} placeholder={props.placeholder.clone()} />
+                    <input type="text" class="input" onchange={input_change} name={props.name.clone()} placeholder={props.placeholder.clone()} />
                 </div>
             }
         },

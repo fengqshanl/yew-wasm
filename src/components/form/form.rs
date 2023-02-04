@@ -23,6 +23,7 @@ pub fn form<F: Properties + Clone + Default + PartialEq + Debug + for<'de> Deser
     let submit = {
         let props = props.clone();
         Callback::from(move |e: FocusEvent| {
+            log::info!("submit");
             e.prevent_default();
             let mut form_data: F = F::default();
             // 通过 FormData 获得 form 表单的值
