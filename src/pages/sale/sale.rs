@@ -1,3 +1,4 @@
+use reqwest::Url;
 use web_sys::{FocusEvent, HtmlFormElement};
 use yew::prelude::*;
 use super::model::DrugDetail;
@@ -15,12 +16,14 @@ pub fn sale() -> Html {
     let visible = use_state(|| false);
     let get_detail_by_id = {
         let id = id.clone();
+        // TODO 优化 url 格式化
         use_async(async move {
-            request::<String, Vec<DrugDetail>>(reqwest::Method::GET, "/drug_tail".to_string(), (*id).clone(), false).await
+            request::<(), Vec<DrugDetail>>(reqwest::Method::GET, format!("/drug?id={}", (*id).clone()), (), false).await
     })};
     let submit = {
         let id = id.clone();
         let get_detail = get_detail_by_id.clone();
+        let visible = visible.clone();
         Callback::from(move |e: FocusEvent| {
             e.prevent_default();
             let form = web_sys::FormData::new_with_form(
@@ -30,6 +33,7 @@ pub fn sale() -> Html {
             id.set(form.get("id").as_string().expect("msg"));
             log::info!("value: {:?}", form.get("id").as_string().expect("msg"));
             get_detail.run();
+            visible.set(true);
         })
     };
     let on_save = {
@@ -38,8 +42,9 @@ pub fn sale() -> Html {
         })
     };
     let on_cancel = {
+        let visible = visible.clone();
         Callback::from(move|e|{
-
+            visible.set(false);
         })
     };
     html! {
