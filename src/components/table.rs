@@ -44,7 +44,6 @@ where
         let p_c = p_c.clone();
         use_effect_with_deps(
             move |data_info| {
-                log::info!("data info: {:?}", data_info);
                 let mut data_li = vec![];
                 *whole_list.borrow_mut() = data_info.clone();
                 let mut size = data_info.len();

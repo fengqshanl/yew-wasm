@@ -10,7 +10,6 @@ where
     B: Serialize + std::fmt::Debug,
 {
     let allow_body = method == reqwest::Method::POST || method == reqwest::Method::PUT || allow;
-    log::info!("url: {:?}", url);
     let url = format!("{}{}", String::from("http://127.0.0.1:9876"), url);
     let mut builder = reqwest::Client::new()
         .request(method, url)
@@ -21,9 +20,7 @@ where
     let response = builder.send().await;
     if let Ok(data) = response {
         if data.status().is_success() {
-            log::info!("data: {:?}", data);
             let data: Result<T, _> = data.json::<T>().await;
-            log::info!("data: {:?}", data);
             if let Ok(data) = data {
                 Ok(data)
             } else {

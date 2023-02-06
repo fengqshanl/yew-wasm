@@ -49,11 +49,11 @@ pub fn model() -> Html {
                                             {"库存清单"}
                                         </Link<Route>>
                                     </li>
-                                    <li>
-                                        <Link<Route> classes={"is-ghost"} to={Route::Setting}>
-                                            {"流水"}
-                                        </Link<Route>>
-                                    </li>
+                                    // <li>
+                                    //     <Link<Route> classes={"is-ghost"} to={Route::Setting}>
+                                    //         {"流水"}
+                                    //     </Link<Route>>
+                                    // </li>
                                 </ul>
                             </aside>
                         </div>

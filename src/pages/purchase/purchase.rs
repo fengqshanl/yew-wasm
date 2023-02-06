@@ -203,6 +203,10 @@ pub fn purchase() -> Html {
                             </div>
                             <div class="column is-half">
                                 <Form<PurchaseType> form={save_one_purchase}>
+                                     <FormItem label={"编号"} name={"code"} require={true} message={"require code!"}>
+                                        <Input component_type={&ComponentType::Input}
+                                               placeholder={"药品编号".to_string()} />
+                                    </FormItem>
                                     <FormItem label={"名称"} name={"name"} require={true} message={"require name!"}>
                                         <Input component_type={&ComponentType::Input}
                                                placeholder={"药品名称".to_string()} />

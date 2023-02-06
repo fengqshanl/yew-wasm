@@ -39,6 +39,6 @@ features = [
     "HtmlCollection",
     "HtmlInputElement",
     "FormData",
-    "FocusEvent", "Event", "EventTarget", "SubmitEvent",
+    "FocusEvent", "Event", "EventTarget", "SubmitEvent", "KeyboardEvent",
     "HtmlFormElement", "HtmlBodyElement", "HtmlDivElement"
 ]
