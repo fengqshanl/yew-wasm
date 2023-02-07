@@ -29,11 +29,13 @@ pub struct PurchaseInColumn {
 
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
 pub struct PurchaseType {
-    pub id: Uuid,
+    pub code: String,
     pub name: String,
-    pub self_money: f32,
-    pub sale_money: f32,
-    pub number: f32,
+    pub self_money: String,
+    pub sale_money: String,
+    pub manu_address: String,
+    pub spec: String,
+    pub number: String,
 }
 
 impl ColumnTrait<PurchaseType> for PurchaseInColumn {
@@ -69,18 +71,18 @@ impl ColumnTrait<PurchaseType> for PurchaseInColumn {
     }
 }
 
-impl FormTypes for PurchaseType {
-    fn try_set(&mut self, name: &str, value: wasm_bindgen::JsValue) -> Result<(), std::io::Error>{
-         match name {
-            "name" => self.name = value.as_string().expect("name types convert JsValue to String error"),
-            "sale_money" => self.sale_money = value.as_string().expect("money convert error").parse::<f32>().unwrap(),
-            "self_money" => self.self_money = value.as_string().expect("money convert error").parse::<f32>().unwrap(),
-            "number" => self.number = value.as_string().expect("number convert error").parse::<f32>().unwrap(),
-            _ => log::info!("匹配错误，无法找到对应元素")
-        }
-        Ok(()) 
-    }
-}
+// impl FormTypes for PurchaseType {
+//     fn try_set(&mut self, name: &str, value: wasm_bindgen::JsValue) -> Result<(), std::io::Error>{
+//          match name {
+//             "name" => self.name = value.as_string().expect("name types convert JsValue to String error"),
+//             "sale_money" => self.sale_money = value.as_string().expect("money convert error").parse::<f32>().unwrap(),
+//             "self_money" => self.self_money = value.as_string().expect("money convert error").parse::<f32>().unwrap(),
+//             "number" => self.number = value.as_string().expect("number convert error").parse::<f32>().unwrap(),
+//             _ => log::info!("匹配错误，无法找到对应元素")
+//         }
+//         Ok(()) 
+//     }
+// }
 
 impl ColumnTrait<DrugInData> for DrugInColumn {
     fn render(&self, value: String, record: &DrugInData, index: usize, handler: Option<Callback<DrugInData>>) -> Html {

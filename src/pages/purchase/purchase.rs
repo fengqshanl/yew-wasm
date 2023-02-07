@@ -1,37 +1,41 @@
 use crate::back::purchase::BKPurchase;
-use crate::components::autofill::autofill::AutoFillOptions;
-use crate::components::input::input::ComponentType;
 use crate::components::table::{OwnTableComponent};
+use crate::pages::sale::model::DrugOrigin;
 use chrono::Local;
 use sp_yew::uuid::Uuid;
+use wasm_bindgen::JsCast;
+use web_sys::{HtmlInputElement, HtmlFormElement};
 use yew::prelude::*;
 use yew::{html};
 use crate::ownhttp::myhttp::request;
 use yew_hooks::{use_async, use_effect_once};
 use crate::components::{
-    form::{form::{Form},formitem::FormItem},
     modal::OwnModalComponent,
-    input::input::Input,
 };
 
 use super::models::{DrugInData, PurchaseType, DrugInColumn, PurchaseInColumn};
 
 #[function_component(Purchase)]
 pub fn purchase() -> Html {
-    // let name_options: UseStateHandle<Vec<AutoFillOptions>> = use_state(Vec::default);
     let drug_info: UseStateHandle<Vec<DrugInData>> = use_state(Vec::default);
-    let loading = use_state(|| false);
+    let drug_detail = use_state(PurchaseType::default);
     let purchase_list: UseStateHandle<Vec<PurchaseType>> = use_state(Vec::default);
     let visible = use_state(|| false);
     let get_drug_in_data = use_async(async move {
         request::<(), Vec<DrugInData>>(reqwest::Method::GET, "/purchase".to_string(), (), false).await
     });
+    let get_detail_by_id = {
+        let detail = drug_detail.clone();
+        // TODO 优化 url 格式化
+        use_async(async move {
+            request::<(), DrugOrigin>(reqwest::Method::GET, format!("/drug?id={}", (*detail).clone().code), (), false).await
+    })};
     let save_purchase = {
         let purchase_list = purchase_list.clone();
         use_async(async move {
             let mut money: f32 = 0.0;
             for row in (*purchase_list).iter() {
-                money = money + row.self_money;
+                money = money + row.self_money.parse::<f32>().expect("msg");
             }; 
             let fmt = "%Y年%m月%d日 %H:%M:%S";
             let now = Local::now().format(fmt);
@@ -92,6 +96,26 @@ pub fn purchase() -> Html {
             data_index: "detail".to_string(),
         },
     ];
+    {
+        let get_detail = get_detail_by_id.clone();
+        let drug = drug_detail.clone();
+        use_effect_with_deps(move|detail|{
+            if let Some(detail) = &detail.data {
+                let pur = PurchaseType { 
+                    name: detail.goods_name.clone(), 
+                    code: detail.code.clone(),
+                    spec: detail.spec.clone(), 
+                    self_money: "".to_string(),
+                    sale_money: "".to_string(),
+                    manu_address: detail.manu_name.clone(), 
+                    number: 1.to_string() 
+                };
+                drug.set(pur);
+            }
+            
+            || ()
+        }, get_detail)
+    }
     let on_save = {
         let save_purchase = save_purchase.clone();
         let visible = visible.clone();
@@ -115,26 +139,29 @@ pub fn purchase() -> Html {
         })
     };
     let save_one_purchase = {
-        let tip_list = purchase_list.clone();
-        Callback::from(move |mut sale: PurchaseType| {
-            sale.id = Uuid::new_v4();
-            let mut tips = (*tip_list).clone();
-            tips.push(sale);
-            tip_list.set(tips.to_vec());
+        let drug = drug_detail.clone();
+        let get_detail = get_detail_by_id.clone();
+        Callback::from(move |e: FocusEvent| {
+            e.prevent_default();
+            let form = web_sys::FormData::new_with_form(
+                &e.target().and_then(|t| t.dyn_into::<HtmlFormElement>().ok()).expect("msg")
+            ).expect("create FormData failed");
+            let code = form.get("code").as_string().expect("msg");
+            if code.chars().count() >= 13 {
+                let mut info = (*drug).clone();
+                info.code = code.clone();
+                drug.set(info);
+                get_detail.run();
+            }
         })
     };
     let purchase_handler = {
         let purchase_list = purchase_list.clone();
         Callback::from(move|purchase: PurchaseType|{
             let tar = (*purchase_list).clone()
-                                                         .into_iter()
-                                                         .filter(|da| da.id != purchase.id).collect::<Vec<PurchaseType>>();
+                .into_iter()
+                .filter(|da| da.code != purchase.code).collect::<Vec<PurchaseType>>();
             purchase_list.set(tar);
-        })
-    };
-    let click_row = {
-        Callback::from(move|purchase|{
-            // TODO 点击某一行时需要内容回填 进行修改操作
         })
     };
     {
@@ -167,6 +194,92 @@ pub fn purchase() -> Html {
             get_drug_in_data,
         )
     }
+    let purchase_in = {
+        let drug = drug_detail.clone();
+        let purchase = purchase_list.clone();
+        Callback::from(move|_e|{
+            let mut purchase_l = (*purchase).clone();
+            let drug = (*drug).clone();
+            let tar = purchase_l.clone()
+                            .into_iter()
+                            .filter(|drug_d: &PurchaseType| drug_d.code == drug.code.clone()).collect::<Vec<PurchaseType>>();
+            if tar.len() > 0 {
+                let mut tar_out = purchase_l.clone()
+                            .into_iter()
+                            .filter(|drug_d: &PurchaseType| drug_d.code != drug.code.clone()).collect::<Vec<PurchaseType>>();
+                let mut tar = tar[0].clone();
+                tar.number = (tar.number.parse::<f32>().expect("msg") + 1.0).to_string();
+                tar_out.push(tar.clone());
+                purchase.set(tar_out);
+            }else{
+                purchase_l.push(drug);
+                purchase.set(purchase_l);
+            }
+        })  
+    };
+    let input_name = {
+        let drug = drug_detail.clone();
+        Callback::from(move|e: InputEvent|{
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*drug).clone();
+            info.name = input.value();
+            drug.set(info);
+        })
+    };
+    let input_code = {
+        let drug = drug_detail.clone();
+        Callback::from(move|e: InputEvent|{
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*drug).clone();
+            info.code = input.value();
+            drug.set(info);
+        })
+    };
+    let input_number = {
+        let drug = drug_detail.clone();
+        Callback::from(move|e: InputEvent|{
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*drug).clone();
+            info.number = input.value();
+            drug.set(info);
+        })
+    };
+    let input_self = {
+        let drug = drug_detail.clone();
+        Callback::from(move|e: InputEvent|{
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*drug).clone();
+            info.self_money = input.value();
+            drug.set(info);
+        })
+    };
+    let input_sale = {
+        let drug = drug_detail.clone();
+        Callback::from(move|e: InputEvent|{
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*drug).clone();
+            info.sale_money = input.value();
+            drug.set(info);
+        })
+    };
+    let input_spec = {
+          let drug = drug_detail.clone();
+        Callback::from(move|e: InputEvent|{
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*drug).clone();
+            info.spec = input.value();
+            drug.set(info);
+        })
+    };
+    let input_address = {
+        let drug = drug_detail.clone();
+        Callback::from(move|e: InputEvent|{
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*drug).clone();
+            info.manu_address = input.value();
+            drug.set(info);
+        })
+    };
     html! {
         <div class="drug-in-components">
             <nav class="navbar is-transparent">
@@ -198,32 +311,45 @@ pub fn purchase() -> Html {
                                 {"入库药品清单"}
                                 <OwnTableComponent<PurchaseType,PurchaseInColumn> data={(*purchase_list).clone()}
                                     columns={purchase_columns} pagination={false} handler={purchase_handler}
-                                    row_click={click_row}
-                                    />
+                                />
                             </div>
                             <div class="column is-half">
-                                <Form<PurchaseType> form={save_one_purchase}>
-                                     <FormItem label={"编号"} name={"code"} require={true} message={"require code!"}>
-                                        <Input component_type={&ComponentType::Input}
-                                               placeholder={"药品编号".to_string()} />
-                                    </FormItem>
-                                    <FormItem label={"名称"} name={"name"} require={true} message={"require name!"}>
-                                        <Input component_type={&ComponentType::Input}
-                                               placeholder={"药品名称".to_string()} />
-                                    </FormItem>
-                                    <FormItem label={"数量"} name={"number"} require={true} message={"require number!"}>
-                                        <Input component_type={&ComponentType::Input} placeholder="进货数量" />
-                                    </FormItem>
-                                    <FormItem label={"进价"} name={"self_money"} require={true} message={"require number!"}>
-                                        <Input component_type={&ComponentType::Input} placeholder="药品进价" />
-                                    </FormItem>
-                                    <FormItem label={"售价"} name={"sale_money"} require={true} message={"require number!"}>
-                                        <Input component_type={&ComponentType::Input} placeholder="药品售价" />
-                                    </FormItem>
-                                    <FormItem name={"药品入单"}>
-                                        <Input component_type={&ComponentType::Submit} />
-                                    </FormItem>
-                                </Form<PurchaseType>>
+                                <form onsubmit={save_one_purchase}>
+                                    <div class="field">
+                                        <label class="label">{"编号"}</label>
+                                        <input class="input" value={drug_detail.code.clone()} name={"code"} oninput={input_code} placeholder={"药品编号"} />
+                                    </div>
+                                    <button type="submit">{
+                                        "触发提交"
+                                    }</button>
+                                </form>
+                                <div class="field">
+                                    <label class="label">{"名称"}</label>
+                                    <input class="input" value={drug_detail.name.clone()}  oninput={input_name} placeholder={"药品名称"} />
+                                </div>
+                                <div class="field">
+                                    <label class="label">{"厂家"}</label>
+                                    <input class="input" value={drug_detail.manu_address.clone()}  oninput={input_address} placeholder={"生产厂家"} />
+                                </div>
+                                <div class="field">
+                                    <label class="label">{"规格"}</label>
+                                    <input class="input" value={drug_detail.spec.clone()} oninput={input_spec} placeholder={"药品规格"} />
+                                </div>
+                                <div class="field">
+                                    <label class="label">{"数量"}</label>
+                                    <input class="input" value={drug_detail.number.clone()} oninput={input_number} type="number" placeholder={"药品数量"} />
+                                </div>
+                                <div class="field">
+                                    <label class="label">{"进价"}</label>
+                                    <input class="input" value={drug_detail.self_money.clone()} oninput={input_self} type="number" placeholder={"药品进价"} />
+                                </div>
+                                <div class="field">
+                                    <label class="label">{"售价"}</label>
+                                    <input class="input" value={drug_detail.sale_money.clone()} oninput={input_sale} type="number" placeholder={"药品售价"} />
+                                </div>
+                                <div>
+                                    <button class="button is-success" onclick={purchase_in}>{"药品入单"}</button>
+                                </div>
                             </div>
                         </div>
                     </OwnModalComponent>

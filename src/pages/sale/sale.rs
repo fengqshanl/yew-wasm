@@ -27,7 +27,6 @@ pub fn sale() -> Html {
                 let tar = (*drug_value).clone()
                             .into_iter()
                             .filter(|drug: &DrugDetail| drug.code == current_id.clone()).collect::<Vec<DrugDetail>>();
-                log::info!("tar: tar: {:?}, current_id: {:?}, drug_value:{:?}", tar, current_id, (*drug_value).clone());
                 // 重复扫码 数量叠加 并移到首位
                 if tar.len() == 1 {
                     let mut tar = tar[0].clone();
@@ -138,7 +137,7 @@ pub fn sale() -> Html {
                     {"销售"}
                 </div>
             </nav>
-            <div class="drug-components-top">
+            <div class="drug-in-components-content">
                 <OwnTableComponent<DrugDetail, DrugDetailColumn> data={(*drug_value).clone()} columns={columns} pagination={false} handler={tip_handler} />
             </div>
         </div>

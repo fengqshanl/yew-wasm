@@ -41,7 +41,7 @@ pub fn model() -> Html {
                                     </li>
                                     <li>
                                         <Link<Route> classes={"is-ghost"} to={Route::Drug}>
-                                            {"药品出库"}
+                                            {"药品出库记录"}
                                         </Link<Route>>
                                     </li>
                                     <li>
