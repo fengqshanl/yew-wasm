@@ -38,6 +38,17 @@ pub struct PurchaseType {
     pub number: String,
 }
 
+#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
+pub struct PurchaseTypeOrigin {
+    pub code: String,
+    pub name: String,
+    pub self_money: f32,
+    pub sale_money: f32,
+    pub manu_address: String,
+    pub spec: String,
+    pub number: f32,
+}
+
 impl ColumnTrait<PurchaseType> for PurchaseInColumn {
     fn render(&self, value: String, record: &PurchaseType, index: usize, handler: Option<Callback<PurchaseType>>) -> Html {
         match &value as &str {
@@ -45,6 +56,8 @@ impl ColumnTrait<PurchaseType> for PurchaseInColumn {
             "name" => return html!{{&record.name}},
             "self_money" => return html!{{&record.self_money}},
             "sale_money" => return html!{{&record.sale_money}},
+            "manu_address" => return html!{{&record.manu_address}},
+            "spec" => return html!{{&record.spec}},
             "number" => return html!{{&record.number}},
             "detail" => {
                 let delete = {
@@ -91,7 +104,20 @@ impl ColumnTrait<DrugInData> for DrugInColumn {
             "money" => return html!{{&record.money}},
             "kind" => return html!{{&record.kind}},
             "in_time" => return html!{{NaiveDateTime::parse_from_str(record.in_time.as_str(), "%Y-%m-%d %H:%M:%S%.f").expect("msg").format("%Y-%m-%d %H:%M:%S").to_string()}},
-            "detail" => return html!{<button class="button is-link is-outlined is-small">{"采购详情"}</button>},
+            "detail" => {
+                let detail = {
+                    let record = record.clone();
+                    Callback::from(move|_|{
+                        match handler.clone() {
+                            Some(handler) => {
+                                handler.emit(record.clone());
+                            },
+                            _ => {}
+                        };
+                    })
+                };  
+                return html!{<button class="button is-link is-outlined is-small" onclick={detail}>{"采购详情"}</button>}
+            },
             _ => html!{}
         }
     }

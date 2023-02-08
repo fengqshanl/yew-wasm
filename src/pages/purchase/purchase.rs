@@ -13,14 +13,22 @@ use crate::components::{
     modal::OwnModalComponent,
 };
 
-use super::models::{DrugInData, PurchaseType, DrugInColumn, PurchaseInColumn};
+use super::models::{DrugInData, PurchaseType, DrugInColumn, PurchaseInColumn, PurchaseTypeOrigin};
 
 #[function_component(Purchase)]
 pub fn purchase() -> Html {
     let drug_info: UseStateHandle<Vec<DrugInData>> = use_state(Vec::default);
     let drug_detail = use_state(PurchaseType::default);
     let purchase_list: UseStateHandle<Vec<PurchaseType>> = use_state(Vec::default);
+    let drug_detail_list: UseStateHandle<Vec<PurchaseType>> = use_state(Vec::default);
     let visible = use_state(|| false);
+    let visible_detail = use_state(|| false);
+    let detail_id = use_state(String::default);
+    let drug_detail_quest = {
+        let id = detail_id.clone();
+        use_async(async move {
+            request::<(), Vec<PurchaseTypeOrigin>>(reqwest::Method::GET, format!("/purchase_detail?id={}", (*id).clone()), (), false).await
+    })};
     let get_drug_in_data = use_async(async move {
         request::<(), Vec<DrugInData>>(reqwest::Method::GET, "/purchase".to_string(), (), false).await
     });
@@ -35,7 +43,7 @@ pub fn purchase() -> Html {
         use_async(async move {
             let mut money: f32 = 0.0;
             for row in (*purchase_list).iter() {
-                money = money + row.self_money.parse::<f32>().expect("msg");
+                money = money + row.self_money.parse::<f32>().expect("msg") * row.number.parse::<f32>().expect("msg");
             }; 
             let fmt = "%Y年%m月%d日 %H:%M:%S";
             let now = Local::now().format(fmt);
@@ -96,6 +104,61 @@ pub fn purchase() -> Html {
             data_index: "detail".to_string(),
         },
     ];
+    let purchase_columns_detail = vec![
+        PurchaseInColumn{ 
+            title: "序号".to_string(), 
+            data_index: "index".to_string(),
+        },
+        PurchaseInColumn{ 
+            title: "药品名称".to_string(), 
+            data_index: "name".to_string() ,
+        },
+        PurchaseInColumn{ 
+            title: "规格".to_string(), 
+            data_index: "spec".to_string() ,
+        },
+        PurchaseInColumn{ 
+            title: "厂家".to_string(), 
+            data_index: "manu_address".to_string() ,
+        },
+        PurchaseInColumn{ 
+            title: "售价".to_string(), 
+            data_index: "sale_money".to_string(),
+        },
+        PurchaseInColumn{ 
+            title: "进价".to_string(), 
+            data_index: "self_money".to_string() ,
+        },
+        PurchaseInColumn{ 
+            title: "数量".to_string(), 
+            data_index: "number".to_string() ,
+        }
+    ];
+    {
+        let drug_detail_quest = drug_detail_quest.clone();
+        let visible_detail = visible_detail.clone();
+        let drug_detail_list = drug_detail_list.clone();
+        use_effect_with_deps(move|detail|{
+            if let Some(detail) = &detail.data {
+                    drug_detail_list.set(
+                        detail
+                            .iter()
+                            .map(move |info| PurchaseType {
+                                code: info.code.to_string(),
+                                name: info.name.to_string(),
+                                self_money: info.self_money.to_string(),
+                                sale_money: info.sale_money.to_string(),
+                                manu_address: info.manu_address.to_string(),
+                                spec: info.spec.to_string(),
+                                number: info.number.to_string(),
+                            })
+                            .collect::<Vec<PurchaseType>>(),
+                    );
+                    visible_detail.set(true);
+                }
+            || log::info!("")
+        }, drug_detail_quest)
+    }
     {
         let get_detail = get_detail_by_id.clone();
         let drug = drug_detail.clone();
@@ -280,6 +343,26 @@ pub fn purchase() -> Html {
             drug.set(info);
         })
     };
+    let on_save_detail = {
+        let visible_detail = visible_detail.clone();
+        Callback::from(move|e|{
+            visible_detail.set(false);
+        })
+    };
+    let on_cancel_detail = {
+        let visible_detail = visible_detail.clone();
+        Callback::from(move|e|{
+            visible_detail.set(false);
+        })
+    };
+    let drug_row_click = {
+        let id = detail_id.clone();
+        let dryg_detail_quest = drug_detail_quest.clone();
+        Callback::from(move|e: DrugInData|{
+            id.set(e.per_id.clone());
+            dryg_detail_quest.run();
+        })
+    };
     html! {
         <div class="drug-in-components">
             <nav class="navbar is-transparent">
@@ -297,7 +380,7 @@ pub fn purchase() -> Html {
                 </div>
             </nav>
             <div class="drug-in-components-content">
-                <OwnTableComponent<DrugInData,DrugInColumn> data={(*drug_info).clone()} columns={columns} pagination={false} />
+                <OwnTableComponent<DrugInData,DrugInColumn> data={(*drug_info).clone()} columns={columns} handler={drug_row_click} pagination={false} />
             </div>
             { if *visible {
                 html!{
@@ -350,6 +433,26 @@ pub fn purchase() -> Html {
                                 <div>
                                     <button class="button is-success" onclick={purchase_in}>{"药品入单"}</button>
                                 </div>
+                            </div>
+                        </div>
+                    </OwnModalComponent>
+                }
+            } else {
+                html!{}
+            }}
+
+            { if *visible_detail {
+                html!{
+                    <OwnModalComponent
+                        name={"入库详情".to_string()}
+                        save={on_save_detail.clone()}
+                        cancel={on_cancel_detail.clone()}
+                    >
+                        <div class="columns">
+                            <div class="column drug-content-left">
+                                <OwnTableComponent<PurchaseType,PurchaseInColumn> data={(*drug_detail_list).clone()}
+                                    columns={purchase_columns_detail} pagination={false}
+                                />
                             </div>
                         </div>
                     </OwnModalComponent>
