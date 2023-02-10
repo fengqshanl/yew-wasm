@@ -1,12 +1,11 @@
-use gloo_utils::document;
-use wasm_bindgen::prelude::Closure;
+use web_sys::HtmlFormElement;
 use yew::prelude::*;
 use super::model::{DrugDetail, DrugOrigin, DrugDetailColumn};
 use wasm_bindgen::JsCast;
 use crate::ownhttp::myhttp::request;
 use crate::components::table::{OwnTableComponent};
 use yew::{function_component, html};
-use yew_hooks::{use_async, use_effect_once};
+use yew_hooks::{use_async};
 
 #[function_component(Sale)]
 pub fn sale() -> Html {
@@ -21,14 +20,16 @@ pub fn sale() -> Html {
     let search_add = {
         let id = id.clone();
         let drug_value = drug_value.clone();
-        let get_detail = get_detail_by_id.clone();
+        // let get_detail = get_detail_by_id.clone();
         Callback::from(move|current_id: String|{
             if (current_id.chars().count() == 13) || (current_id.chars().count() == 14) {
                 let tar = (*drug_value).clone()
                             .into_iter()
                             .filter(|drug: &DrugDetail| drug.code == current_id.clone()).collect::<Vec<DrugDetail>>();
                 // 重复扫码 数量叠加 并移到首位
+                // log::info!("tar: {:?}", tar);
                 if tar.len() == 1 {
+                    log::info!("tar == 1: {:?}", tar);
                     let mut tar = tar[0].clone();
                     tar.number += 1;
                     let mut target = (*drug_value).clone()
@@ -37,12 +38,21 @@ pub fn sale() -> Html {
                     target.insert(0, tar);
                     drug_value.set(target);
                 }else if tar.len() == 0 {
+                    log::info!("tar == 0: {:?}", tar);
                     id.set(current_id.clone());
-                    get_detail.run();
+                    // get_detail.run();
                 }
             }
         })
     };
+    {
+        let id = id.clone();
+        let get_detail = get_detail_by_id.clone();
+        use_effect_with_deps(move|id|{
+            log::info!("id:{:?}", (*id).clone());
+            get_detail.run(); || ()
+        }, id)
+    }
     let columns = vec![
             DrugDetailColumn{
                 title: "序号".to_string(),
@@ -75,7 +85,6 @@ pub fn sale() -> Html {
         ];
     {
         let get_detail = get_detail_by_id.clone();
-        let id = id.clone();
         let drug_value = drug_value.clone();
         use_effect_with_deps(move|detail|{
             if let Some(detail) = &detail.data {
@@ -85,6 +94,7 @@ pub fn sale() -> Html {
                             .filter(|drug: &DrugDetail| drug.code == (*id).clone()).collect::<Vec<DrugDetail>>();
                 // 重复扫码 数量叠加 并移到首位
                 if tar.len() == 1 {
+                    log::info!("tar: == 1 deps{:?}", tar);
                     let mut tar = tar[0].clone();
                     tar.number += 1;
                     let mut target = (*drug_value).clone()
@@ -93,10 +103,10 @@ pub fn sale() -> Html {
                     target.insert(0, tar);
                     drug_value.set(target);
                 }else if tar.len() == 0 {
+                    log::info!("tar: == 0 deps{:?}", tar);
                     tips.insert(0, DrugDetail { name: detail.goods_name.clone(), code: detail.code.clone(), spec: detail.spec.clone(), manu_name: detail.manu_name.clone(), number: 1 });
                     drug_value.set(tips.to_vec());
                 }
-                id.set("".to_string());
             }
             || ()
         }, get_detail)
@@ -111,25 +121,39 @@ pub fn sale() -> Html {
         })
     };
     let mut current_id: String = String::default();
-    let even = Closure::<dyn FnMut(KeyboardEvent)>::wrap(
-        Box::new(move |e: KeyboardEvent| {
-            let num: u32 = 13; 
-            if e.char_code() != num {
-                current_id += &e.key();
-            } else {
-                if (current_id.chars().count() == 13) || (current_id.chars().count() == 14) {
-                    search_add.emit(current_id.clone());
-                }
-                current_id = "".to_string();
+    // let even = Closure::<dyn FnMut(KeyboardEvent)>::wrap(
+    //     Box::new(move |e: KeyboardEvent| {
+    //         let num: u32 = 13; 
+    //         if e.char_code() != num {
+    //             current_id += &e.key();
+    //         } else {
+    //             if (current_id.chars().count() == 13) || (current_id.chars().count() == 14) {
+    //                 search_add.emit(current_id.clone());
+    //             }
+    //             current_id = "".to_string();
+    //         }
+    //     })
+    // );
+    // {
+    //     use_effect_once(move||{
+    //         document().add_event_listener_with_callback("keypress", even.as_ref().unchecked_ref()).expect("msg");
+    //         || even.forget()
+    //     });
+    // }
+    let tem_function = {
+        let drug = search_add.clone();
+        Callback::from(move |e: FocusEvent| {
+            e.prevent_default();
+            let form = web_sys::FormData::new_with_form(
+                &e.target().and_then(|t| t.dyn_into::<HtmlFormElement>().ok()).expect("msg")
+            ).expect("create FormData failed");
+            let code = form.get("tem").as_string().expect("msg");
+            if code.chars().count() >= 13 {
+                log::info!("code: {:?}", code.clone());
+                drug.emit(code.clone());
             }
         })
-    );
-    {
-        use_effect_once(move||{
-            document().add_event_listener_with_callback("keypress", even.as_ref().unchecked_ref()).expect("msg");
-            || even.forget()
-        });
-    }
+    };
     html! {
         <div class="drug-components"> 
             <nav class="navbar is-transparent">
@@ -138,6 +162,10 @@ pub fn sale() -> Html {
                 </div>
             </nav>
             <div class="drug-in-components-content">
+                <form onsubmit={tem_function}>
+                    <input name={"tem"} />
+                    <button type="submit">{"submit"}</button>
+                </form>
                 <OwnTableComponent<DrugDetail, DrugDetailColumn> data={(*drug_value).clone()} columns={columns} pagination={false} handler={tip_handler} />
             </div>
         </div>

@@ -1,6 +1,5 @@
-use std::{time::SystemTime, fmt::Debug};
+use std::{fmt::Debug};
 use chrono::prelude::*;
-use sp_yew::uuid::Uuid;
 
 use serde::{Deserialize, Serialize};
 use yew::{Properties, Html, html, Callback};
