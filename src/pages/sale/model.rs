@@ -5,7 +5,9 @@ use crate::components::table::ColumnTrait;
 
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
 pub struct DrugDetail {
+    pub drug_id: String,
     pub name: String,
+    pub sale_money: f64,
     pub spec: String,
     pub manu_name: String,
     pub code: String,
@@ -26,6 +28,8 @@ impl ColumnTrait<DrugDetail> for DrugDetailColumn {
                 "spec" => return html! {{&record.spec}},
                 "manu_name" => return html! {{&record.manu_name}},
                 "number" => return html!{{&record.number}},
+                "sale_money" => return html!{{&record.sale_money}},
+                "total" => return html!{{&(record.sale_money * record.number as f64)}},
                 "detail" => return {
                     let delete = {
                         let record = record.clone();
@@ -56,27 +60,45 @@ impl ColumnTrait<DrugDetail> for DrugDetailColumn {
 
 #[derive(Debug, Deserialize, Clone, Serialize, Default, PartialEq)]
 pub struct DrugOrigin {
+    pub purchase: String,
+    pub drug_id: String,
     pub code: String, // 条形码
-    pub sptm_img: String, // 条码图片
-    pub img: String, // 图片
-    pub goods_type: String, // 商品分类
-    pub trademark: String, // 品牌 
-    pub goods_name: String, // 商品名称
+    pub name: String, // 商品名称
+    pub sale_money: f64,
+    pub manu_address: String,
     pub spec: String, // 规格
-    pub note: String, // 备注信息
-    pub price: String, // 参考价格(单位:元)
-    pub ycg: String, // 原产地(可能无此参数信息)
-    pub manu_name: String, // 厂商
-    pub manu_address: String, //  厂商地址
-    pub qs: String,//生产许可证号
-    pub nw: String,//净重
-    pub description: String,//形态描述
-    pub gw: String,//毛重
-    pub width: String,//宽
-    pub height: String,//高
-    pub depth: String,//深
-    pub gpc: String,//gpc分类代码
-    pub gpc_type: String,//gpc分类名称    
-    pub keyword: String,//关键词
-    pub img_list: String // 条码中心图片列表
+}
+
+// {
+//     "purchase": "b56bcda4-0466-4403-875e-f92e468ba2bb",
+//     "code": "6915010140629",
+//     "sale_money": 13,
+//     "name": "特非那定片（敏迪）",
+//     "manu_address": "江苏联环药业股份有限公司",
+//     "spec": "60mg×12片/盒"
+// }
+
+
+#[derive(Debug, Deserialize, Clone, Serialize, Default, PartialEq)]
+pub struct SaleOrigin {
+    pub drug_id: String, // 药品 id
+    pub code: String, // 条形码
+    pub name: String, // 商品名称
+    pub sale_money: f64, // 售价
+    pub spec: String, // 规格
+    pub manu_address: String, // 厂家
+    pub number: i64, // 售出的数量
+    pub total: f64, // 总价
+}
+
+#[derive(Debug, Deserialize, Clone, Serialize, Default, PartialEq)]
+pub struct SaleAdd{
+    pub drug_id: String, // 药品 id
+    pub code: String, // 条形码
+    pub name: String, // 商品名称
+    pub sale_money: f64, // 售价
+    pub spec: String, // 规格
+    pub manu_name: String, // 厂家
+    pub number: i64, // 售出的数量
+    pub total: f64, // 总价
 }

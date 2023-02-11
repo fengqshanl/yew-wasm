@@ -1,9 +1,10 @@
 use web_sys::HtmlFormElement;
 use yew::prelude::*;
-use super::model::{DrugDetail, DrugOrigin, DrugDetailColumn};
+use super::model::{DrugDetail, DrugOrigin, DrugDetailColumn, SaleOrigin};
 use wasm_bindgen::JsCast;
 use crate::ownhttp::myhttp::request;
 use crate::components::table::{OwnTableComponent};
+use crate::pages::sale::model::SaleAdd;
 use yew::{function_component, html};
 use yew_hooks::{use_async};
 
@@ -11,16 +12,73 @@ use yew_hooks::{use_async};
 pub fn sale() -> Html {
     let id = use_state(String::default);
     let drug_value = use_state(Vec::default);
+    let sale_need_do = use_state(SaleAdd::default);
+    let add_sale = {
+        let sale_need = sale_need_do.clone();
+        use_async(async move {
+            request::<SaleAdd, Vec<DrugDetail>>(reqwest::Method::POST, "/sale".to_string(), (*sale_need).clone(), false).await
+        })
+    };
     let get_detail_by_id = {
+        let add_sale = add_sale.clone();
+        let sale_need = sale_need_do.clone();
+        let drug_value = drug_value.clone();
         let id = id.clone();
         // TODO 优化 url 格式化
         use_async(async move {
-            request::<(), DrugOrigin>(reqwest::Method::GET, format!("/drug?id={}", (*id).clone()), (), false).await
+            request::<(), DrugOrigin>(reqwest::Method::GET, format!("/purchase_sale_detail?id={}", (*id).clone()), (), false).await.and_then(move|detail|{
+                let mut tips = (*drug_value).clone();
+                let tar = (*drug_value).clone()
+                            .into_iter()
+                            .filter(|drug: &DrugDetail| drug.code == (*id).clone()).collect::<Vec<DrugDetail>>();
+                // 重复扫码 数量叠加 并移到首位
+                if tar.len() == 1 {
+                    log::info!("tar: == 1 deps{:?}", tar);
+                    let mut tar = tar[0].clone();
+                    tar.number += 1;
+                    let mut target = (*drug_value).clone()
+                            .into_iter()
+                            .filter(|drug: &DrugDetail| drug.code != (*id).clone()).collect::<Vec<DrugDetail>>();
+                    sale_need.set(SaleAdd{
+                        drug_id: tar.drug_id.clone(),
+                        code: tar.code.clone(),
+                        name: tar.name.clone(),
+                        sale_money: tar.sale_money.clone(),
+                        spec: tar.spec.clone(),
+                        manu_name: tar.manu_name.clone(),
+                        number: tar.number.clone(),
+                        total:  tar.sale_money * tar.number as f64
+                    });
+                    target.insert(0, tar);
+                    drug_value.set(target);
+                }else if tar.len() == 0 {
+                    log::info!("tar: == 0 deps{:?}, detail:{:?}, id:{:?}, drug_value: {:?}", tar, detail, (*id).clone(), (*drug_value).clone());
+                    let tar = DrugDetail { 
+                        drug_id: detail.drug_id,name: detail.name.clone(), code: detail.code.clone(), spec: detail.spec.clone(), 
+                        manu_name: detail.manu_address.clone(), number: 1, sale_money: detail.sale_money.clone() 
+                    };
+                    tips.insert(0, tar.clone());
+                    sale_need.set(SaleAdd{
+                        drug_id: tar.drug_id.clone(),
+                        code: tar.code.clone(),
+                        name: tar.name.clone(),
+                        sale_money: tar.sale_money.clone(),
+                        spec: tar.spec.clone(),
+                        manu_name: tar.manu_name.clone(),
+                        number: tar.number.clone(),
+                        total:  tar.sale_money * tar.number as f64
+                    });
+                    drug_value.set(tips.to_vec());
+                }
+                add_sale.run();
+                Ok(())
+            })
     })};
+
     let search_add = {
         let id = id.clone();
         let drug_value = drug_value.clone();
-        // let get_detail = get_detail_by_id.clone();
+        let get_detail = get_detail_by_id.clone();
         Callback::from(move|current_id: String|{
             if (current_id.chars().count() == 13) || (current_id.chars().count() == 14) {
                 let tar = (*drug_value).clone()
@@ -40,19 +98,11 @@ pub fn sale() -> Html {
                 }else if tar.len() == 0 {
                     log::info!("tar == 0: {:?}", tar);
                     id.set(current_id.clone());
-                    // get_detail.run();
+                    get_detail.run();
                 }
             }
         })
     };
-    {
-        let id = id.clone();
-        let get_detail = get_detail_by_id.clone();
-        use_effect_with_deps(move|id|{
-            log::info!("id:{:?}", (*id).clone());
-            get_detail.run(); || ()
-        }, id)
-    }
     let columns = vec![
             DrugDetailColumn{
                 title: "序号".to_string(),
@@ -76,41 +126,17 @@ pub fn sale() -> Html {
             },
             DrugDetailColumn{
                 title: "零售价".to_string(),
-                data_index: "number".to_string()
+                data_index: "sale_money".to_string()
+            },
+            DrugDetailColumn{
+                title: "总价".to_string(),
+                data_index: "total".to_string()
             },
             DrugDetailColumn{
                 title: "操作".to_string(),
                 data_index: "detail".to_string()
             },
         ];
-    {
-        let get_detail = get_detail_by_id.clone();
-        let drug_value = drug_value.clone();
-        use_effect_with_deps(move|detail|{
-            if let Some(detail) = &detail.data {
-                let mut tips = (*drug_value).clone();
-                let tar = (*drug_value).clone()
-                            .into_iter()
-                            .filter(|drug: &DrugDetail| drug.code == (*id).clone()).collect::<Vec<DrugDetail>>();
-                // 重复扫码 数量叠加 并移到首位
-                if tar.len() == 1 {
-                    log::info!("tar: == 1 deps{:?}", tar);
-                    let mut tar = tar[0].clone();
-                    tar.number += 1;
-                    let mut target = (*drug_value).clone()
-                            .into_iter()
-                            .filter(|drug: &DrugDetail| drug.code != (*id).clone()).collect::<Vec<DrugDetail>>();
-                    target.insert(0, tar);
-                    drug_value.set(target);
-                }else if tar.len() == 0 {
-                    log::info!("tar: == 0 deps{:?}", tar);
-                    tips.insert(0, DrugDetail { name: detail.goods_name.clone(), code: detail.code.clone(), spec: detail.spec.clone(), manu_name: detail.manu_name.clone(), number: 1 });
-                    drug_value.set(tips.to_vec());
-                }
-            }
-            || ()
-        }, get_detail)
-    }
     let tip_handler = {
         let drug_value = drug_value.clone();
         Callback::from(move|record: DrugDetail|{
@@ -120,7 +146,7 @@ pub fn sale() -> Html {
             drug_value.set(target);
         })
     };
-    let mut current_id: String = String::default();
+    // let mut current_id: String = String::default();
     // let even = Closure::<dyn FnMut(KeyboardEvent)>::wrap(
     //     Box::new(move |e: KeyboardEvent| {
     //         let num: u32 = 13; 

@@ -13,7 +13,7 @@ use crate::components::{
     modal::OwnModalComponent,
 };
 
-use super::models::{DrugInData, PurchaseType, DrugInColumn, PurchaseInColumn, PurchaseTypeOrigin};
+use super::models::{DrugInData, PurchaseType, DrugInColumn, PurchaseInColumn, PurchaseTypeOrigin, PurchaseDrugDetail};
 
 #[function_component(Purchase)]
 pub fn purchase() -> Html {
@@ -36,7 +36,7 @@ pub fn purchase() -> Html {
         let detail = drug_detail.clone();
         // TODO 优化 url 格式化
         use_async(async move {
-            request::<(), DrugOrigin>(reqwest::Method::GET, format!("/drug?id={}", (*detail).clone().code), (), false).await
+            request::<(), PurchaseDrugDetail>(reqwest::Method::GET, format!("/drug?id={}", (*detail).clone().code), (), false).await
     })};
     let save_purchase = {
         let purchase_list = purchase_list.clone();
@@ -144,6 +144,7 @@ pub fn purchase() -> Html {
                         detail
                             .iter()
                             .map(move |info| PurchaseType {
+                                drug_id: info.drug_id.to_string(),
                                 code: info.code.to_string(),
                                 name: info.name.to_string(),
                                 self_money: info.self_money.to_string(),
@@ -165,6 +166,7 @@ pub fn purchase() -> Html {
         use_effect_with_deps(move|detail|{
             if let Some(detail) = &detail.data {
                 let pur = PurchaseType { 
+                    drug_id: detail.drug_id.clone(),
                     name: detail.goods_name.clone(), 
                     code: detail.code.clone(),
                     spec: detail.spec.clone(), 

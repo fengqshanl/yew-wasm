@@ -28,6 +28,7 @@ pub struct PurchaseInColumn {
 
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
 pub struct PurchaseType {
+    pub drug_id: String,
     pub code: String,
     pub name: String,
     pub self_money: String,
@@ -39,6 +40,7 @@ pub struct PurchaseType {
 
 #[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
 pub struct PurchaseTypeOrigin {
+    pub drug_id: String,
     pub code: String,
     pub name: String,
     pub self_money: f32,
@@ -122,6 +124,58 @@ impl ColumnTrait<DrugInData> for DrugInColumn {
     }
     fn title(&self) -> String{
         self.title.clone()
+    }
+    fn data_index(&self) -> String {
+        self.data_index.clone()
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
+pub struct PurchaseDrugDetail {
+    pub drug_id: String,
+    pub goods_name: String,
+    pub spec: String,
+    pub manu_name: String,
+    pub code: String,
+    pub number: i64,
+}
+
+#[derive(Clone, Debug, PartialEq, Properties, Default, Deserialize, Serialize)]
+pub struct DrugDetailColumn {
+    pub title: String,
+    pub data_index: String,
+}
+
+impl ColumnTrait<PurchaseDrugDetail> for DrugDetailColumn {
+    fn render(&self, value: String, record: &PurchaseDrugDetail, index: usize, handler: Option<Callback<PurchaseDrugDetail>>) -> Html {
+            match &value as &str {
+                "index" => return html! {{index + 1}},
+                "name" => return html! {{&record.goods_name}},
+                "spec" => return html! {{&record.spec}},
+                "manu_name" => return html! {{&record.manu_name}},
+                "number" => return html!{{&record.number}},
+                "detail" => return {
+                    let delete = {
+                        let record = record.clone();
+                        Callback::from(move|_|{
+                            match handler.clone() {
+                                Some(handler) => {
+                                    handler.emit(record.clone());
+                                },
+                                _ => {}
+                            };
+                        })
+                    };  
+                    html!{<button class="button is-danger is-light is-small" onclick={delete}>{"删除"}</button>}
+                },
+                _ => html! {},
+            }
+    }
+    fn title(&self) -> String {
+        self.title.clone()
+    }
+    fn center(&self) -> String {
+        "center".to_string()
     }
     fn data_index(&self) -> String {
         self.data_index.clone()
