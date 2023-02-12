@@ -13,13 +13,20 @@ pub fn sale() -> Html {
     let id = use_state(String::default);
     let drug_value = use_state(Vec::default);
     let sale_need_do = use_state(SaleAdd::default);
-    let add_sale = {
+    let put_sale = {
         let sale_need = sale_need_do.clone();
         use_async(async move {
             request::<SaleAdd, Vec<DrugDetail>>(reqwest::Method::POST, "/sale".to_string(), (*sale_need).clone(), false).await
         })
     };
+    let add_sale = {
+        let sale_need = sale_need_do.clone();
+        use_async(async move {
+            request::<SaleAdd, Vec<DrugDetail>>(reqwest::Method::PUT, "/sale".to_string(), (*sale_need).clone(), false).await
+        })
+    };
     let get_detail_by_id = {
+        let put_sale = put_sale.clone();
         let add_sale = add_sale.clone();
         let sale_need = sale_need_do.clone();
         let drug_value = drug_value.clone();
@@ -33,6 +40,7 @@ pub fn sale() -> Html {
                             .filter(|drug: &DrugDetail| drug.code == (*id).clone()).collect::<Vec<DrugDetail>>();
                 // 重复扫码 数量叠加 并移到首位
                 if tar.len() == 1 {
+                    // 修改操作
                     log::info!("tar: == 1 deps{:?}", tar);
                     let mut tar = tar[0].clone();
                     tar.number += 1;
@@ -40,6 +48,7 @@ pub fn sale() -> Html {
                             .into_iter()
                             .filter(|drug: &DrugDetail| drug.code != (*id).clone()).collect::<Vec<DrugDetail>>();
                     sale_need.set(SaleAdd{
+                        sale_id: tar.sale_id.clone(),
                         drug_id: tar.drug_id.clone(),
                         code: tar.code.clone(),
                         name: tar.name.clone(),
@@ -51,14 +60,17 @@ pub fn sale() -> Html {
                     });
                     target.insert(0, tar);
                     drug_value.set(target);
+                    put_sale.run();
                 }else if tar.len() == 0 {
+                    // 添加操作
                     log::info!("tar: == 0 deps{:?}, detail:{:?}, id:{:?}, drug_value: {:?}", tar, detail, (*id).clone(), (*drug_value).clone());
-                    let tar = DrugDetail { 
+                    let tar = DrugDetail { sale_id: None,
                         drug_id: detail.drug_id,name: detail.name.clone(), code: detail.code.clone(), spec: detail.spec.clone(), 
                         manu_name: detail.manu_address.clone(), number: 1, sale_money: detail.sale_money.clone() 
                     };
                     tips.insert(0, tar.clone());
                     sale_need.set(SaleAdd{
+                        sale_id: None,
                         drug_id: tar.drug_id.clone(),
                         code: tar.code.clone(),
                         name: tar.name.clone(),
